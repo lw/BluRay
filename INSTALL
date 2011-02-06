@@ -1,0 +1,6 @@
+No automatic installation tools are provided.
+
+All the code is written in Vala and resides in the src directory. No dependencies except Glib and Gio are required.
+Compiling all files inside the src directory together with some software that uses this libray should be enough.
+The compile.sh script does exactly this.
+

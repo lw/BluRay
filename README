@@ -1,0 +1,6 @@
+This software is a sample implementation of the Blu-ray Disc specifications.
+
+It doesn't aim to be fast and performing, it aims to be a complete and clear example to show the internal workings of BD-ROM playback. It can still be used as a libray by other softwares, and, since it's written in Vala, it can be compiled to GObject-C and automatically binded with many languages.
+
+The intention is to provide an abstraction of the BD-ROM Application Format at different levels: a direct mapping between classes and binary format, a more abstracted mapping in which classes represents the elements used in BD-ROM playback and their relations, and so on...
+
