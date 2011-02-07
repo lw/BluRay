@@ -26,11 +26,14 @@ namespace BluRay
 
 		public AppInfoPlayList AppInfoPlayList { get; set; default = new BluRay.AppInfoPlayList (); }
 
-		public PlayItem[] PlayItems { get; set; }
+		public PlayList PlayList { get; set; default = new BluRay.PlayList (); }
 
-		public SubPath[] SubPaths { get; set; }
+		public PlayListMark PlayListMark { get; set; default = new BluRay.PlayListMark (); }
 
-		public PlayListMark[] PlayListMarks { get; set; }
+		public MPLS.from_file (FileReader reader)
+		{
+			read (reader);
+		}
 
 		public void read (FileReader reader)
 		{
@@ -46,59 +49,15 @@ namespace BluRay
 			// AppInfoPlayList
 			AppInfoPlayList.read (reader);
 
-			// PlayList
 			reader.seek (PlayListStartAddress);
-			{
-				uint32 Length = reader.read_bits_as_uint32 (32);
 
-				int64 Position = reader.tell (); // Needed to seek
+			// PlayList
+			PlayList.read (reader);
 
-				reader.skip_bits (16);
-
-				uint16 NumberOfPlayItems = reader.read_bits_as_uint16 (16);
-				uint16 NumberOfSubPaths = reader.read_bits_as_uint16 (16);
-
-				PlayItems = new PlayItem[NumberOfPlayItems];
-
-				for (int i = 0; i < NumberOfPlayItems; i += 1)
-				{
-					// PlayItem
-					PlayItems[i] = new PlayItem ();
-					PlayItems[i].read (reader);
-				}
-
-				SubPaths = new SubPath[NumberOfSubPaths];
-
-				for (int i = 0; i < NumberOfSubPaths; i += 1)
-				{
-					// SubPath
-					SubPaths[i] = new SubPath ();
-					SubPaths[i].read (reader);
-				}
-
-				reader.seek (Position + Length);
-			}
+			reader.seek (PlayListMarkStartAddress);
 
 			// PlayListMarks
-			reader.seek (PlayListMarkStartAddress);
-			{
-				uint32 Length = reader.read_bits_as_uint32 (32);
-
-				int64 Position = reader.tell (); // Needed to seek
-
-				uint16 NumberOfPlayListMarks = reader.read_bits_as_uint16 (16);
-
-				PlayListMarks = new PlayListMark[NumberOfPlayListMarks];
-
-				for (int i = 0; i < NumberOfPlayListMarks; i += 1)
-				{
-					// PlayListMark
-					PlayListMarks[i] = new PlayListMark ();
-					PlayListMarks[i].read (reader);
-				}
-
-				reader.seek (Position + Length);
-			}
+			PlayListMark.read (reader);
 		}
 
 		public void write (FileOutputStream stream)

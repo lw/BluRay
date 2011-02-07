@@ -28,6 +28,11 @@ namespace BluRay
 
 		public uint8[] ObjectData { get; set; }
 
+		public Title.from_file (FileReader reader)
+		{
+			read (reader);
+		}
+
 		public void read (FileReader reader)
 		{
 			ObjectType = reader.read_bits_as_uint8 (2);
@@ -39,6 +44,7 @@ namespace BluRay
 
 			reader.skip_bits (14);
 
+			// TODO: use right fields
 			ObjectData = reader.read_bytes (6);
 		}
 

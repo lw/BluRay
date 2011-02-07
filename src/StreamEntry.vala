@@ -18,52 +18,49 @@
 
 namespace BluRay
 {
-	class AppInfoPlayList : Object
+	class StreamEntry : Object
 	{
-		public uint8 PlaybackType { get; set; }
+		public uint8 StreamType { get; set; }
 
-		public uint16 PlaybackCount { get; set; }
+		public uint8 RefToSubPathID { get; set; }
 
-		public UOMaskTable UOMaskTable { get; set; default = new BluRay.UOMaskTable (); }
+		public uint8 RefToSubClipID { get; set; }
 
-		public uint8 RandomAccessFlag { get; set; }
+		public uint16 RefToStreamPID { get; set; }
 
-		public uint8 AudioMixFlag { get; set; }
-
-		public uint8 LosslessBypassFlag { get; set; }
-
-		public AppInfoPlayList.from_file (FileReader reader)
+		public StreamEntry.from_file (FileReader reader)
 		{
 			read (reader);
 		}
 
 		public void read (FileReader reader)
 		{
-			uint32 Length = reader.read_bits_as_uint32 (32);
+			uint8 Length = reader.read_bits_as_uint8 (8);
 
 			int64 Position = reader.tell (); // Needed to seek
 
-			reader.skip_bits (8);
+			StreamType = reader.read_bits_as_uint8 (8);
 
-			PlaybackType = reader.read_bits_as_uint8 (8);
-
-			if (PlaybackType == 0x02 || PlaybackType == 0x03)
+			if (StreamType == 0x01)
 			{
-				PlaybackCount = reader.read_bits_as_uint16 (16);
+				RefToStreamPID = reader.read_bits_as_uint16 (16);
 			}
-			else
+			else if (StreamType == 0x02)
 			{
-				reader.skip_bits (16);
+				RefToSubPathID = reader.read_bits_as_uint8 (8);
+				RefToSubClipID = reader.read_bits_as_uint8 (8);
+				RefToStreamPID = reader.read_bits_as_uint16 (16);
 			}
-
-			// UOMaskTable
-			UOMaskTable.read (reader);
-
-			RandomAccessFlag = reader.read_bits_as_uint8 (1);
-			AudioMixFlag = reader.read_bits_as_uint8 (1);
-			LosslessBypassFlag = reader.read_bits_as_uint8 (1);
-
-			reader.skip_bits (13);
+			else if (StreamType == 0x03)
+			{
+				RefToStreamPID = reader.read_bits_as_uint16 (16);
+			}
+			else if (StreamType == 0x04)
+			{
+				RefToSubPathID = reader.read_bits_as_uint8 (8);
+				RefToSubClipID = reader.read_bits_as_uint8 (8);
+				RefToStreamPID = reader.read_bits_as_uint16 (16);
+			}
 
 			reader.seek (Position + Length);
 		}

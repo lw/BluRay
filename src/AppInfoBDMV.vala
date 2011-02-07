@@ -30,6 +30,11 @@ namespace BluRay
 
 		public string UserData { get; set; default = ""; }
 
+		public AppInfoBDMV.from_file (FileReader reader)
+		{
+			read (reader);
+		}
+
 		public void read (FileReader reader)
 		{
 			uint32 Length = reader.read_bits_as_uint32 (32);
@@ -43,8 +48,8 @@ namespace BluRay
 
 			reader.skip_bits (5);
 
-			VideoFormat = reader.read_bits_as_uint8 (1);
-			FrameRate = reader.read_bits_as_uint8 (1);
+			VideoFormat = reader.read_bits_as_uint8 (4);
+			FrameRate = reader.read_bits_as_uint8 (4);
 
 			reader.skip_bits (16);
 

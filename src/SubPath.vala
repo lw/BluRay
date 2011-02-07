@@ -24,7 +24,12 @@ namespace BluRay
 
 		public uint8 IsRepeatSubPath { get; set; }
 
-		public SubPlayItem[] SubPlayItems { get; set; }
+		public SubPlayItem[] SubPlayItem { get; set; }
+
+		public SubPath.from_file (FileReader reader)
+		{
+			read (reader);
+		}
 
 		public void read (FileReader reader)
 		{
@@ -42,13 +47,12 @@ namespace BluRay
 
 			uint8 NumberOfSubPlayItems = reader.read_bits_as_uint8 (8);
 
-			SubPlayItems = new SubPlayItem[NumberOfSubPlayItems];
+			SubPlayItem = new SubPlayItem[NumberOfSubPlayItems];
 
 			for (int i = 0; i < NumberOfSubPlayItems; i += 1)
 			{
 				// SubPlayItem
-				SubPlayItems[i] = new SubPlayItem ();
-				SubPlayItems[i].read (reader);
+				SubPlayItem[i] = new BluRay.SubPlayItem.from_file (reader);
 			}
 
 			reader.seek (Position + Length);

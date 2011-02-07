@@ -80,6 +80,11 @@ namespace BluRay
 
 		public uint8 SecondaryPGStreamNumberChange { get; set; }
 
+		public UOMaskTable.from_file (FileReader reader)
+		{
+			read (reader);
+		}
+
 		public void read (FileReader reader)
 		{
 			MenuCall = reader.read_bits_as_uint8 (1);

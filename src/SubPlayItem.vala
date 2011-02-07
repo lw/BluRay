@@ -38,6 +38,11 @@ namespace BluRay
 
 		public uint32 SyncStartPTS { get; set; }
 
+		public SubPlayItem.from_file (FileReader reader)
+		{
+			read (reader);
+		}
+
 		public void read (FileReader reader)
 		{
 			uint16 Length = reader.read_bits_as_uint16 (16);

@@ -18,38 +18,46 @@
 
 namespace BluRay
 {
-	class INDX : Object
+	class PlayList : Object
 	{
-		public string TypeIndicator { get; set; default = "MPLS"; }
+		public PlayItem[] PlayItem { get; set; }
 
-		public string TypeIndicator2 { get; set; default = "0200"; }
+		public SubPath[] SubPath { get; set; }
 
-		public AppInfoBDMV AppInfoBDMV { get; set; default = new BluRay.AppInfoBDMV (); }
-
-		public Indexes Indexes { get; set; default = new BluRay.Indexes (); }
-
-		public INDX.from_file (FileReader reader)
+		public PlayList.from_file (FileReader reader)
 		{
 			read (reader);
 		}
 
 		public void read (FileReader reader)
 		{
-			TypeIndicator = reader.read_string (4);
-			TypeIndicator2 = reader.read_string (4);
+			uint32 Length = reader.read_bits_as_uint32 (32);
 
-			uint32 IndexesStartAddress = reader.read_bits_as_uint32 (32);
-			uint32 ExtensionDataStartAddress = reader.read_bits_as_uint32 (32);
+			int64 Position = reader.tell (); // Needed to seek
 
-			reader.skip_bits (192);
+			reader.skip_bits (16);
 
-			// AppInfoBDMV
-			AppInfoBDMV.read (reader);
+			uint16 NumberOfPlayItems = reader.read_bits_as_uint16 (16);
+			uint16 NumberOfSubPaths = reader.read_bits_as_uint16 (16);
 
-			reader.seek (IndexesStartAddress);
+			PlayItem = new PlayItem[NumberOfPlayItems];
 
-			// Indexes
-			Indexes.read (reader);
+			for (int i = 0; i < NumberOfPlayItems; i += 1)
+			{
+				// PlayItem
+				PlayItem[i] = new BluRay.PlayItem.from_file (reader);
+
+			}
+
+			SubPath = new SubPath[NumberOfSubPaths];
+
+			for (int i = 0; i < NumberOfSubPaths; i += 1)
+			{
+				// SubPath
+				SubPath[i] = new BluRay.SubPath.from_file (reader);
+			}
+
+			reader.seek (Position + Length);
 		}
 
 		public void write (FileOutputStream stream)

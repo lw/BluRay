@@ -20,23 +20,47 @@ namespace BluRay
 {
 	class PlayListMark : Object
 	{
-		public uint8 MarkType { get; set; }
+		public uint8[] MarkType { get; set; }
 
-		public uint16 RefToPlayItemID { get; set; }
+		public uint16[] RefToPlayItemID { get; set; }
 
-		public uint32 MarkTimeStamp { get; set; }
+		public uint32[] MarkTimeStamp { get; set; }
 
-		public uint16 EntryESPID { get; set; }
+		public uint16[] EntryESPID { get; set; }
 
-		public uint32 Duration { get; set; }
+		public uint32[] Duration { get; set; }
+
+		public PlayListMark.from_file (FileReader reader)
+		{
+			read (reader);
+		}
 
 		public void read (FileReader reader)
 		{
-			MarkType = reader.read_bits_as_uint8 (8);
-			RefToPlayItemID = reader.read_bits_as_uint16 (16);
-			MarkTimeStamp = reader.read_bits_as_uint32 (32);
-			EntryESPID = reader.read_bits_as_uint16 (16);
-			Duration = reader.read_bits_as_uint32 (32);
+			uint32 Length = reader.read_bits_as_uint32 (32);
+
+			int64 Position = reader.tell (); // Needed to seek
+
+			uint16 NumberOfPlayListMarks = reader.read_bits_as_uint16 (16);
+
+			MarkType = new uint8[NumberOfPlayListMarks];
+			RefToPlayItemID = new uint16[NumberOfPlayListMarks];
+			MarkTimeStamp = new uint32[NumberOfPlayListMarks];
+			EntryESPID = new uint16[NumberOfPlayListMarks];
+			Duration = new uint32[NumberOfPlayListMarks];
+
+			for (int i = 0; i < NumberOfPlayListMarks; i += 1)
+			{
+				reader.skip_bits (8);
+
+				MarkType[i] = reader.read_bits_as_uint8 (8);
+				RefToPlayItemID[i] = reader.read_bits_as_uint16 (16);
+				MarkTimeStamp[i] = reader.read_bits_as_uint32 (32);
+				EntryESPID[i] = reader.read_bits_as_uint16 (16);
+				Duration[i] = reader.read_bits_as_uint32 (32);
+			}
+
+			reader.seek (Position + Length);
 		}
 
 		public void write (FileOutputStream stream)

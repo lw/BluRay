@@ -40,6 +40,11 @@ namespace BluRay
 
 		public uint32 Operand2 { get; set; }
 
+		public NavigationCommand.from_file (FileReader reader)
+		{
+			read (reader);
+		}
+
 		public void read (FileReader reader)
 		{
 			OperandCount = reader.read_bits_as_uint8 (3);

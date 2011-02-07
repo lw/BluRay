@@ -24,7 +24,12 @@ namespace BluRay
 
 		public string TypeIndicator2 { get; set; default = "0200"; }
 
-		public MovieObject[] MovieObjects { get; set; }
+		public MovieObjects MovieObjects { get; set; default = new BluRay.MovieObjects (); }
+
+		public MOBJ.from_file (FileReader reader)
+		{
+			read (reader);
+		}
 
 		public void read (FileReader reader)
 		{
@@ -36,26 +41,7 @@ namespace BluRay
 			reader.skip_bits (224);
 
 			// MovieObjects
-			{
-				uint32 Length = reader.read_bits_as_uint32 (32);
-
-				int64 Position = reader.tell (); // Needed to seek
-
-				reader.skip_bits (32);
-
-				uint16 NumberOfMovieObjects = reader.read_bits_as_uint16 (16);
-
-				MovieObjects = new MovieObject[NumberOfMovieObjects];
-
-				for (int i = 0; i < NumberOfMovieObjects; i += 1)
-				{
-					// MovieObject
-					MovieObjects[i] = new MovieObject ();
-					MovieObjects[i].read (reader);
-				}
-
-				reader.seek (Position + Length);
-			}
+			MovieObjects.read (reader);
 		}
 
 		public void write (FileOutputStream stream)

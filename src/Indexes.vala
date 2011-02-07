@@ -18,38 +18,42 @@
 
 namespace BluRay
 {
-	class INDX : Object
+	class Indexes : Object
 	{
-		public string TypeIndicator { get; set; default = "MPLS"; }
+		public Title FirstPlaybackTitle { get; set; default = new BluRay.Title (); }
 
-		public string TypeIndicator2 { get; set; default = "0200"; }
+		public Title TopMenuTitle { get; set; default = new BluRay.Title (); }
 
-		public AppInfoBDMV AppInfoBDMV { get; set; default = new BluRay.AppInfoBDMV (); }
+		public Title[] Title { get; set; }
 
-		public Indexes Indexes { get; set; default = new BluRay.Indexes (); }
-
-		public INDX.from_file (FileReader reader)
+		public Indexes.from_file (FileReader reader)
 		{
 			read (reader);
 		}
 
 		public void read (FileReader reader)
 		{
-			TypeIndicator = reader.read_string (4);
-			TypeIndicator2 = reader.read_string (4);
+			uint32 Length = reader.read_bits_as_uint32 (32);
 
-			uint32 IndexesStartAddress = reader.read_bits_as_uint32 (32);
-			uint32 ExtensionDataStartAddress = reader.read_bits_as_uint32 (32);
+			int64 Position = reader.tell (); // Needed to seek
 
-			reader.skip_bits (192);
+			// FirstPlaybackTitle
+			FirstPlaybackTitle.read (reader);
 
-			// AppInfoBDMV
-			AppInfoBDMV.read (reader);
+			// TopMenuTitle
+			TopMenuTitle.read (reader);
 
-			reader.seek (IndexesStartAddress);
+			uint16 NumberOfTitles = reader.read_bits_as_uint16 (16);
 
-			// Indexes
-			Indexes.read (reader);
+			Title = new Title[NumberOfTitles];
+
+			for (int i = 0; i < NumberOfTitles; i += 1)
+			{
+				// Title
+				Title[i] = new BluRay.Title.from_file (reader);
+			}
+
+			reader.seek (Position + Length);
 		}
 
 		public void write (FileOutputStream stream)

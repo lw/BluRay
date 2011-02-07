@@ -44,6 +44,11 @@ namespace BluRay
 
 		public STNTable STNTable { get; set; default = new BluRay.STNTable (); }
 
+		public PlayItem.from_file (FileReader reader)
+		{
+			read (reader);
+		}
+
 		public void read (FileReader reader)
 		{
 			uint16 Length = reader.read_bits_as_uint16 (16);
