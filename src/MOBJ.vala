@@ -26,27 +26,55 @@ namespace BluRay
 
 		public MovieObjects MovieObjects { get; set; default = new BluRay.MovieObjects (); }
 
-		public MOBJ.from_file (FileReader reader)
+		public ExtensionData ExtensionData { get; set; default = new BluRay.ExtensionData (); }
+
+		public MOBJ.from_file_input_stream (FileInputStream input_stream) throws ParseError
 		{
-			read (reader);
+			try
+			{
+				this.from_bit_input_stream (new BitInputStream (input_stream));
+			}
+			catch (ParseError e)
+			{
+				throw e;
+			}
 		}
 
-		public void read (FileReader reader)
+		public MOBJ.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			TypeIndicator = reader.read_string (4);
-			TypeIndicator2 = reader.read_string (4);
+			try
+			{
+				TypeIndicator = input_stream.read_string (4);
+				TypeIndicator2 = input_stream.read_string (4);
 
-			uint32 ExtensionDataStartAddress = reader.read_bits_as_uint32 (32);
+				uint32 ExtensionDataStartAddress = input_stream.read_bits_as_uint32 (32);
 
-			reader.skip_bits (224);
+				input_stream.skip_bits (224);
 
-			// MovieObjects
-			MovieObjects.read (reader);
+				// MovieObjects
+				MovieObjects = new BluRay.MovieObjects.from_bit_input_stream (input_stream);
+
+				if (ExtensionDataStartAddress != 0)
+				{
+					input_stream.seek (ExtensionDataStartAddress);
+
+					// ExtensionData
+					ExtensionData = new BluRay.ExtensionData.from_bit_input_stream (input_stream);
+				}
+			}
+			catch (ParseError e)
+			{
+				throw e;
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse MOBJ.");
+			}
 		}
 
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

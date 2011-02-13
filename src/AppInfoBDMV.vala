@@ -30,37 +30,39 @@ namespace BluRay
 
 		public string UserData { get; set; default = ""; }
 
-		public AppInfoBDMV.from_file (FileReader reader)
+		public AppInfoBDMV.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
+			try
+			{
+				uint32 Length = input_stream.read_bits_as_uint32 (32);
+
+				int64 Position = input_stream.tell (); // Needed to seek
+
+				input_stream.skip_bits (1);
+
+				InitialOutputModePreference = input_stream.read_bits_as_uint8 (1);
+				SSContentExistFlag = input_stream.read_bits_as_uint8 (1);
+
+				input_stream.skip_bits (5);
+
+				VideoFormat = input_stream.read_bits_as_uint8 (4);
+				FrameRate = input_stream.read_bits_as_uint8 (4);
+
+				input_stream.skip_bits (16);
+
+				UserData = input_stream.read_string (32);
+
+				input_stream.seek (Position + Length);
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse AppInfoBDMV.");
+			}
 		}
 
-		public void read (FileReader reader)
-		{
-			uint32 Length = reader.read_bits_as_uint32 (32);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			reader.skip_bits (1);
-
-			InitialOutputModePreference = reader.read_bits_as_uint8 (1);
-			SSContentExistFlag = reader.read_bits_as_uint8 (1);
-
-			reader.skip_bits (5);
-
-			VideoFormat = reader.read_bits_as_uint8 (4);
-			FrameRate = reader.read_bits_as_uint8 (4);
-
-			reader.skip_bits (16);
-
-			UserData = reader.read_string (32);
-
-			reader.seek (Position + Length);
-		}
-
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

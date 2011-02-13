@@ -30,42 +30,44 @@ namespace BluRay
 
 		public uint32[] Duration { get; set; }
 
-		public PlayListMark.from_file (FileReader reader)
+		public PlayListMark.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
-		}
-
-		public void read (FileReader reader)
-		{
-			uint32 Length = reader.read_bits_as_uint32 (32);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			uint16 NumberOfPlayListMarks = reader.read_bits_as_uint16 (16);
-
-			MarkType = new uint8[NumberOfPlayListMarks];
-			RefToPlayItemID = new uint16[NumberOfPlayListMarks];
-			MarkTimeStamp = new uint32[NumberOfPlayListMarks];
-			EntryESPID = new uint16[NumberOfPlayListMarks];
-			Duration = new uint32[NumberOfPlayListMarks];
-
-			for (int i = 0; i < NumberOfPlayListMarks; i += 1)
+			try
 			{
-				reader.skip_bits (8);
+				uint32 Length = input_stream.read_bits_as_uint32 (32);
 
-				MarkType[i] = reader.read_bits_as_uint8 (8);
-				RefToPlayItemID[i] = reader.read_bits_as_uint16 (16);
-				MarkTimeStamp[i] = reader.read_bits_as_uint32 (32);
-				EntryESPID[i] = reader.read_bits_as_uint16 (16);
-				Duration[i] = reader.read_bits_as_uint32 (32);
+				int64 Position = input_stream.tell (); // Needed to seek
+
+				uint16 NumberOfPlayListMarks = input_stream.read_bits_as_uint16 (16);
+
+				MarkType = new uint8[NumberOfPlayListMarks];
+				RefToPlayItemID = new uint16[NumberOfPlayListMarks];
+				MarkTimeStamp = new uint32[NumberOfPlayListMarks];
+				EntryESPID = new uint16[NumberOfPlayListMarks];
+				Duration = new uint32[NumberOfPlayListMarks];
+
+				for (int i = 0; i < NumberOfPlayListMarks; i += 1)
+				{
+					input_stream.skip_bits (8);
+
+					MarkType[i] = input_stream.read_bits_as_uint8 (8);
+					RefToPlayItemID[i] = input_stream.read_bits_as_uint16 (16);
+					MarkTimeStamp[i] = input_stream.read_bits_as_uint32 (32);
+					EntryESPID[i] = input_stream.read_bits_as_uint16 (16);
+					Duration[i] = input_stream.read_bits_as_uint32 (32);
+				}
+
+				input_stream.seek (Position + Length);
 			}
-
-			reader.seek (Position + Length);
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse PlayListMark.");
+			}
 		}
 
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

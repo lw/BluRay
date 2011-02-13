@@ -32,45 +32,51 @@ namespace BluRay
 
 		public uint8 LosslessBypassFlag { get; set; }
 
-		public AppInfoPlayList.from_file (FileReader reader)
+		public AppInfoPlayList.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
-		}
-
-		public void read (FileReader reader)
-		{
-			uint32 Length = reader.read_bits_as_uint32 (32);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			reader.skip_bits (8);
-
-			PlaybackType = reader.read_bits_as_uint8 (8);
-
-			if (PlaybackType == 0x02 || PlaybackType == 0x03)
+			try
 			{
-				PlaybackCount = reader.read_bits_as_uint16 (16);
+				uint32 Length = input_stream.read_bits_as_uint32 (32);
+
+				int64 Position = input_stream.tell (); // Needed to seek
+
+				input_stream.skip_bits (8);
+
+				PlaybackType = input_stream.read_bits_as_uint8 (8);
+
+				if (PlaybackType == 0x02 || PlaybackType == 0x03)
+				{
+					PlaybackCount = input_stream.read_bits_as_uint16 (16);
+				}
+				else
+				{
+					input_stream.skip_bits (16);
+				}
+
+				// UOMaskTable
+				UOMaskTable = new BluRay.UOMaskTable.from_bit_input_stream (input_stream);
+
+				RandomAccessFlag = input_stream.read_bits_as_uint8 (1);
+				AudioMixFlag = input_stream.read_bits_as_uint8 (1);
+				LosslessBypassFlag = input_stream.read_bits_as_uint8 (1);
+
+				input_stream.skip_bits (13);
+
+				input_stream.seek (Position + Length);
 			}
-			else
+			catch (ParseError e)
 			{
-				reader.skip_bits (16);
+				throw e;
 			}
-
-			// UOMaskTable
-			UOMaskTable.read (reader);
-
-			RandomAccessFlag = reader.read_bits_as_uint8 (1);
-			AudioMixFlag = reader.read_bits_as_uint8 (1);
-			LosslessBypassFlag = reader.read_bits_as_uint8 (1);
-
-			reader.skip_bits (13);
-
-			reader.seek (Position + Length);
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse AppInfoPlayList.");
+			}
 		}
 
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

@@ -28,46 +28,48 @@ namespace BluRay
 
 		public uint16 RefToStreamPID { get; set; }
 
-		public StreamEntry.from_file (FileReader reader)
+		public StreamEntry.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
+			try
+			{
+				uint8 Length = input_stream.read_bits_as_uint8 (8);
+
+				int64 Position = input_stream.tell (); // Needed to seek
+
+				StreamType = input_stream.read_bits_as_uint8 (8);
+
+				if (StreamType == 0x01)
+				{
+					RefToStreamPID = input_stream.read_bits_as_uint16 (16);
+				}
+				else if (StreamType == 0x02)
+				{
+					RefToSubPathID = input_stream.read_bits_as_uint8 (8);
+					RefToSubClipID = input_stream.read_bits_as_uint8 (8);
+					RefToStreamPID = input_stream.read_bits_as_uint16 (16);
+				}
+				else if (StreamType == 0x03)
+				{
+					RefToStreamPID = input_stream.read_bits_as_uint16 (16);
+				}
+				else if (StreamType == 0x04)
+				{
+					RefToSubPathID = input_stream.read_bits_as_uint8 (8);
+					RefToSubClipID = input_stream.read_bits_as_uint8 (8);
+					RefToStreamPID = input_stream.read_bits_as_uint16 (16);
+				}
+
+				input_stream.seek (Position + Length);
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse StreamEntry.");
+			}
 		}
 
-		public void read (FileReader reader)
-		{
-			uint8 Length = reader.read_bits_as_uint8 (8);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			StreamType = reader.read_bits_as_uint8 (8);
-
-			if (StreamType == 0x01)
-			{
-				RefToStreamPID = reader.read_bits_as_uint16 (16);
-			}
-			else if (StreamType == 0x02)
-			{
-				RefToSubPathID = reader.read_bits_as_uint8 (8);
-				RefToSubClipID = reader.read_bits_as_uint8 (8);
-				RefToStreamPID = reader.read_bits_as_uint16 (16);
-			}
-			else if (StreamType == 0x03)
-			{
-				RefToStreamPID = reader.read_bits_as_uint16 (16);
-			}
-			else if (StreamType == 0x04)
-			{
-				RefToSubPathID = reader.read_bits_as_uint8 (8);
-				RefToSubClipID = reader.read_bits_as_uint8 (8);
-				RefToStreamPID = reader.read_bits_as_uint16 (16);
-			}
-
-			reader.seek (Position + Length);
-		}
-
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

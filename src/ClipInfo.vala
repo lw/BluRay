@@ -18,13 +18,21 @@
 
 namespace BluRay
 {
-	class PlayList : Object
+	class ClipInfo : Object
 	{
-		public PlayItem[] PlayItem { get; set; }
+		public uint8 ClipStreamType { get; set; }
 
-		public SubPath[] SubPath { get; set; }
+		public uint8 ApplicationType { get; set; }
 
-		public PlayList.from_bit_input_stream (BitInputStream input_stream) throws ParseError
+		public uint8 IsCC5 { get; set; }
+
+		public uint32 TSRecordingRate { get; set; }
+
+		public uint32 NumberOfSourcePackets { get; set; }
+
+//		public TSTypeInfoBlock TSTypeInfoBlock { get; set; default = new TSTypeInfoBlock (); }
+
+		public ClipInfo.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
 			try
 			{
@@ -34,35 +42,27 @@ namespace BluRay
 
 				input_stream.skip_bits (16);
 
-				uint16 NumberOfPlayItems = input_stream.read_bits_as_uint16 (16);
-				uint16 NumberOfSubPaths = input_stream.read_bits_as_uint16 (16);
+				ClipStreamType = input_stream.read_bits_as_uint8 (8);
+				ApplicationType = input_stream.read_bits_as_uint8 (8);
 
-				PlayItem = new PlayItem[NumberOfPlayItems];
+				input_stream.skip_bits (31);
 
-				for (int i = 0; i < NumberOfPlayItems; i += 1)
-				{
-					// PlayItem
-					PlayItem[i] = new BluRay.PlayItem.from_bit_input_stream (input_stream);
+				IsCC5 = input_stream.read_bits_as_uint8 (1);
+				TSRecordingRate = input_stream.read_bits_as_uint32 (32);
+				NumberOfSourcePackets = input_stream.read_bits_as_uint32 (32);
 
-				}
+				input_stream.skip_bits (1024);
 
-				SubPath = new SubPath[NumberOfSubPaths];
+				// TSTypeInfoBlock
+	//			TSTypeInfoBlock = new BluRay.TSTypeInfoBlock (input_stream);
 
-				for (int i = 0; i < NumberOfSubPaths; i += 1)
-				{
-					// SubPath
-					SubPath[i] = new BluRay.SubPath.from_bit_input_stream (input_stream);
-				}
+				// TODO: CC5
 
 				input_stream.seek (Position + Length);
 			}
-			catch (ParseError e)
-			{
-				throw e;
-			}
 			catch (IOError e)
 			{
-				throw new ParseError.INPUT_ERROR ("Couldn't parse PlayList.");
+				throw new ParseError.INPUT_ERROR ("Couldn't parse ClipInfo.");
 			}
 		}
 

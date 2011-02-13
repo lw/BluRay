@@ -80,62 +80,64 @@ namespace BluRay
 
 		public uint8 SecondaryPGStreamNumberChange { get; set; }
 
-		public UOMaskTable.from_file (FileReader reader)
+		public UOMaskTable.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
+			try
+			{
+				MenuCall = input_stream.read_bits_as_uint8 (1);
+				TitleSearch = input_stream.read_bits_as_uint8 (1);
+				ChapterSearch = input_stream.read_bits_as_uint8 (1);
+				TimeSearch = input_stream.read_bits_as_uint8 (1);
+				SkipToNextPoint = input_stream.read_bits_as_uint8 (1);
+				SkipToPrevPoint = input_stream.read_bits_as_uint8 (1);
+
+				input_stream.skip_bits (1);
+
+				Stop = input_stream.read_bits_as_uint8 (1);
+				PauseOn = input_stream.read_bits_as_uint8 (1);
+
+				input_stream.skip_bits (1);
+
+				StillOff = input_stream.read_bits_as_uint8 (1);
+				ForwardPlay = input_stream.read_bits_as_uint8 (1);
+				BackwardPlay = input_stream.read_bits_as_uint8 (1);
+				Resume = input_stream.read_bits_as_uint8 (1);
+				MoveUpSelectedButton = input_stream.read_bits_as_uint8 (1);
+				MoveDownSelectedButton = input_stream.read_bits_as_uint8 (1);
+				MoveLeftSelectedButton = input_stream.read_bits_as_uint8 (1);
+				MoveRightSelectedButton = input_stream.read_bits_as_uint8 (1);
+				SelectButton = input_stream.read_bits_as_uint8 (1);
+				ActivateButton = input_stream.read_bits_as_uint8 (1);
+				SelectAndActivateButton = input_stream.read_bits_as_uint8 (1);
+				PrimaryAudioStreamNumberChange = input_stream.read_bits_as_uint8 (1);
+
+				input_stream.skip_bits (1);
+
+				AngleNumberChange = input_stream.read_bits_as_uint8 (1);
+				PopupOn = input_stream.read_bits_as_uint8 (1);
+				PopupOff = input_stream.read_bits_as_uint8 (1);
+				PGEnableDisable = input_stream.read_bits_as_uint8 (1);
+				PGStreamNumberChange = input_stream.read_bits_as_uint8 (1);
+				SecondaryVideoEnableDisable = input_stream.read_bits_as_uint8 (1);
+				SecondaryVideoStreamNumberChange = input_stream.read_bits_as_uint8 (1);
+				SecondaryAudioEnableDisable = input_stream.read_bits_as_uint8 (1);
+				SecondaryAudioStreamNumberChange = input_stream.read_bits_as_uint8 (1);
+
+				input_stream.skip_bits (1);
+
+				SecondaryPGStreamNumberChange = input_stream.read_bits_as_uint8 (1);
+
+				input_stream.skip_bits (30);
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse UOMaskTable.");
+			}
 		}
 
-		public void read (FileReader reader)
-		{
-			MenuCall = reader.read_bits_as_uint8 (1);
-			TitleSearch = reader.read_bits_as_uint8 (1);
-			ChapterSearch = reader.read_bits_as_uint8 (1);
-			TimeSearch = reader.read_bits_as_uint8 (1);
-			SkipToNextPoint = reader.read_bits_as_uint8 (1);
-			SkipToPrevPoint = reader.read_bits_as_uint8 (1);
-
-			reader.skip_bits (1);
-
-			Stop = reader.read_bits_as_uint8 (1);
-			PauseOn = reader.read_bits_as_uint8 (1);
-
-			reader.skip_bits (1);
-
-			StillOff = reader.read_bits_as_uint8 (1);
-			ForwardPlay = reader.read_bits_as_uint8 (1);
-			BackwardPlay = reader.read_bits_as_uint8 (1);
-			Resume = reader.read_bits_as_uint8 (1);
-			MoveUpSelectedButton = reader.read_bits_as_uint8 (1);
-			MoveDownSelectedButton = reader.read_bits_as_uint8 (1);
-			MoveLeftSelectedButton = reader.read_bits_as_uint8 (1);
-			MoveRightSelectedButton = reader.read_bits_as_uint8 (1);
-			SelectButton = reader.read_bits_as_uint8 (1);
-			ActivateButton = reader.read_bits_as_uint8 (1);
-			SelectAndActivateButton = reader.read_bits_as_uint8 (1);
-			PrimaryAudioStreamNumberChange = reader.read_bits_as_uint8 (1);
-
-			reader.skip_bits (1);
-
-			AngleNumberChange = reader.read_bits_as_uint8 (1);
-			PopupOn = reader.read_bits_as_uint8 (1);
-			PopupOff = reader.read_bits_as_uint8 (1);
-			PGEnableDisable = reader.read_bits_as_uint8 (1);
-			PGStreamNumberChange = reader.read_bits_as_uint8 (1);
-			SecondaryVideoEnableDisable = reader.read_bits_as_uint8 (1);
-			SecondaryVideoStreamNumberChange = reader.read_bits_as_uint8 (1);
-			SecondaryAudioEnableDisable = reader.read_bits_as_uint8 (1);
-			SecondaryAudioStreamNumberChange = reader.read_bits_as_uint8 (1);
-
-			reader.skip_bits (1);
-
-			SecondaryPGStreamNumberChange = reader.read_bits_as_uint8 (1);
-
-			reader.skip_bits (30);
-		}
-
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

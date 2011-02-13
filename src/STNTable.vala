@@ -48,119 +48,125 @@ namespace BluRay
 
 		public StreamAttributes[] SecondaryPGStreamAttributes { get; set; }
 
-		public STNTable.from_file (FileReader reader)
+		public STNTable.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
+			try
+			{
+				uint16 Length = input_stream.read_bits_as_uint16 (16);
+
+				int64 Position = input_stream.tell (); // Needed to seek
+
+				input_stream.skip_bits (16);
+
+				uint8 NumberOfPrimaryVideoStreams = input_stream.read_bits_as_uint8 (8);
+				uint8 NumberOfPrimaryAudioStreams = input_stream.read_bits_as_uint8 (8);
+				uint8 NumberOfPrimaryPGStreams = input_stream.read_bits_as_uint8 (8);
+				uint8 NumberOfPrimaryIGStreams = input_stream.read_bits_as_uint8 (8);
+				uint8 NumberOfSecondaryAudioStreams = input_stream.read_bits_as_uint8 (8);
+				uint8 NumberOfSecondaryVideoStreams = input_stream.read_bits_as_uint8 (8);
+				uint8 NumberOfSecondaryPGStreams = input_stream.read_bits_as_uint8 (8);
+
+				input_stream.skip_bits (40);
+
+				PrimaryVideoStreamEntry = new StreamEntry[NumberOfPrimaryVideoStreams];
+				PrimaryVideoStreamAttributes = new StreamAttributes[NumberOfPrimaryVideoStreams];
+
+				for (int i = 0; i < NumberOfPrimaryVideoStreams; i += 1)
+				{
+					// StreamEntry
+					PrimaryVideoStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+
+					// StreamAttributes
+					PrimaryVideoStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+				}
+
+				PrimaryAudioStreamEntry = new StreamEntry[NumberOfPrimaryAudioStreams];
+				PrimaryAudioStreamAttributes = new StreamAttributes[NumberOfPrimaryAudioStreams];
+
+				for (int i = 0; i < NumberOfPrimaryAudioStreams; i += 1)
+				{
+					// StreamEntry
+					PrimaryAudioStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+
+					// StreamAttributes
+					PrimaryAudioStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+				}
+
+				PrimaryPGStreamEntry = new StreamEntry[NumberOfPrimaryPGStreams];
+				PrimaryPGStreamAttributes = new StreamAttributes[NumberOfPrimaryPGStreams];
+
+				for (int i = 0; i < NumberOfPrimaryPGStreams; i += 1)
+				{
+					// StreamEntry
+					PrimaryPGStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+
+					// StreamAttributes
+					PrimaryPGStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+				}
+
+				SecondaryPGStreamEntry = new StreamEntry[NumberOfSecondaryPGStreams];
+				SecondaryPGStreamAttributes = new StreamAttributes[NumberOfSecondaryPGStreams];
+
+				for (int i = 0; i < NumberOfSecondaryPGStreams; i += 1)
+				{
+					// StreamEntry
+					SecondaryPGStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+
+					// StreamAttributes
+					SecondaryPGStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+				}
+
+				PrimaryIGStreamEntry = new StreamEntry[NumberOfPrimaryIGStreams];
+				PrimaryIGStreamAttributes = new StreamAttributes[NumberOfPrimaryIGStreams];
+
+				for (int i = 0; i < NumberOfPrimaryIGStreams; i += 1)
+				{
+					// StreamEntry
+					PrimaryIGStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+
+					// StreamAttributes
+					PrimaryIGStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+				}
+
+				SecondaryAudioStreamEntry = new StreamEntry[NumberOfSecondaryAudioStreams];
+				SecondaryAudioStreamAttributes = new StreamAttributes[NumberOfSecondaryAudioStreams];
+
+				for (int i = 0; i < NumberOfSecondaryAudioStreams; i += 1)
+				{
+					// StreamEntry
+					SecondaryAudioStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+
+					// StreamAttributes
+					SecondaryAudioStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+				}
+
+				SecondaryVideoStreamEntry = new StreamEntry[NumberOfSecondaryVideoStreams];
+				SecondaryVideoStreamAttributes = new StreamAttributes[NumberOfSecondaryVideoStreams];
+
+				for (int i = 0; i < NumberOfSecondaryVideoStreams; i += 1)
+				{
+					// StreamEntry
+					SecondaryVideoStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+
+					// StreamAttributes
+					SecondaryVideoStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+				}
+
+				input_stream.seek (Position + Length);
+			}
+			catch (ParseError e)
+			{
+				throw e;
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse STNTable.");
+			}
 		}
 
-		public void read (FileReader reader)
-		{
-			uint16 Length = reader.read_bits_as_uint16 (16);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			reader.skip_bits (16);
-
-			uint8 NumberOfPrimaryVideoStreams = reader.read_bits_as_uint8 (8);
-			uint8 NumberOfPrimaryAudioStreams = reader.read_bits_as_uint8 (8);
-			uint8 NumberOfPrimaryPGStreams = reader.read_bits_as_uint8 (8);
-			uint8 NumberOfPrimaryIGStreams = reader.read_bits_as_uint8 (8);
-			uint8 NumberOfSecondaryAudioStreams = reader.read_bits_as_uint8 (8);
-			uint8 NumberOfSecondaryVideoStreams = reader.read_bits_as_uint8 (8);
-			uint8 NumberOfSecondaryPGStreams = reader.read_bits_as_uint8 (8);
-
-			reader.skip_bits (40);
-
-			PrimaryVideoStreamEntry = new StreamEntry[NumberOfPrimaryVideoStreams];
-			PrimaryVideoStreamAttributes = new StreamAttributes[NumberOfPrimaryVideoStreams];
-
-			for (int i = 0; i < NumberOfPrimaryVideoStreams; i += 1)
-			{
-				// StreamEntry
-				PrimaryVideoStreamEntry[i] = new StreamEntry.from_file (reader);
-
-				// StreamAttributes
-				PrimaryVideoStreamAttributes[i] = new StreamAttributes.from_file (reader);
-			}
-
-			PrimaryAudioStreamEntry = new StreamEntry[NumberOfPrimaryAudioStreams];
-			PrimaryAudioStreamAttributes = new StreamAttributes[NumberOfPrimaryAudioStreams];
-
-			for (int i = 0; i < NumberOfPrimaryAudioStreams; i += 1)
-			{
-				// StreamEntry
-				PrimaryAudioStreamEntry[i] = new StreamEntry.from_file (reader);
-
-				// StreamAttributes
-				PrimaryAudioStreamAttributes[i] = new StreamAttributes.from_file (reader);
-			}
-
-			PrimaryPGStreamEntry = new StreamEntry[NumberOfPrimaryPGStreams];
-			PrimaryPGStreamAttributes = new StreamAttributes[NumberOfPrimaryPGStreams];
-
-			for (int i = 0; i < NumberOfPrimaryPGStreams; i += 1)
-			{
-				// StreamEntry
-				PrimaryPGStreamEntry[i] = new StreamEntry.from_file (reader);
-
-				// StreamAttributes
-				PrimaryPGStreamAttributes[i] = new StreamAttributes.from_file (reader);
-			}
-
-			SecondaryPGStreamEntry = new StreamEntry[NumberOfSecondaryPGStreams];
-			SecondaryPGStreamAttributes = new StreamAttributes[NumberOfSecondaryPGStreams];
-
-			for (int i = 0; i < NumberOfSecondaryPGStreams; i += 1)
-			{
-				// StreamEntry
-				SecondaryPGStreamEntry[i] = new StreamEntry.from_file (reader);
-
-				// StreamAttributes
-				SecondaryPGStreamAttributes[i] = new StreamAttributes.from_file (reader);
-			}
-
-			PrimaryIGStreamEntry = new StreamEntry[NumberOfPrimaryIGStreams];
-			PrimaryIGStreamAttributes = new StreamAttributes[NumberOfPrimaryIGStreams];
-
-			for (int i = 0; i < NumberOfPrimaryIGStreams; i += 1)
-			{
-				// StreamEntry
-				PrimaryIGStreamEntry[i] = new StreamEntry.from_file (reader);
-
-				// StreamAttributes
-				PrimaryIGStreamAttributes[i] = new StreamAttributes.from_file (reader);
-			}
-
-			SecondaryAudioStreamEntry = new StreamEntry[NumberOfSecondaryAudioStreams];
-			SecondaryAudioStreamAttributes = new StreamAttributes[NumberOfSecondaryAudioStreams];
-
-			for (int i = 0; i < NumberOfSecondaryAudioStreams; i += 1)
-			{
-				// StreamEntry
-				SecondaryAudioStreamEntry[i] = new StreamEntry.from_file (reader);
-
-				// StreamAttributes
-				SecondaryAudioStreamAttributes[i] = new StreamAttributes.from_file (reader);
-			}
-
-			SecondaryVideoStreamEntry = new StreamEntry[NumberOfSecondaryVideoStreams];
-			SecondaryVideoStreamAttributes = new StreamAttributes[NumberOfSecondaryVideoStreams];
-
-			for (int i = 0; i < NumberOfSecondaryVideoStreams; i += 1)
-			{
-				// StreamEntry
-				SecondaryVideoStreamEntry[i] = new StreamEntry.from_file (reader);
-
-				// StreamAttributes
-				SecondaryVideoStreamAttributes[i] = new StreamAttributes.from_file (reader);
-			}
-
-			reader.seek (Position + Length);
-		}
-
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

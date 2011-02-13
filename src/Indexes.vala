@@ -26,39 +26,45 @@ namespace BluRay
 
 		public Title[] Title { get; set; }
 
-		public Indexes.from_file (FileReader reader)
+		public Indexes.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
-		}
-
-		public void read (FileReader reader)
-		{
-			uint32 Length = reader.read_bits_as_uint32 (32);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			// FirstPlaybackTitle
-			FirstPlaybackTitle.read (reader);
-
-			// TopMenuTitle
-			TopMenuTitle.read (reader);
-
-			uint16 NumberOfTitles = reader.read_bits_as_uint16 (16);
-
-			Title = new Title[NumberOfTitles];
-
-			for (int i = 0; i < NumberOfTitles; i += 1)
+			try
 			{
-				// Title
-				Title[i] = new BluRay.Title.from_file (reader);
+				uint32 Length = input_stream.read_bits_as_uint32 (32);
+
+				int64 Position = input_stream.tell (); // Needed to seek
+
+				// FirstPlaybackTitle
+				FirstPlaybackTitle = new BluRay.Title.from_bit_input_stream (input_stream);
+
+				// TopMenuTitle
+				TopMenuTitle = new BluRay.Title.from_bit_input_stream (input_stream);
+
+				uint16 NumberOfTitles = input_stream.read_bits_as_uint16 (16);
+
+				Title = new Title[NumberOfTitles];
+
+				for (int i = 0; i < NumberOfTitles; i += 1)
+				{
+					// Title
+					Title[i] = new BluRay.Title.from_bit_input_stream (input_stream);
+				}
+
+				input_stream.seek (Position + Length);
 			}
-
-			reader.seek (Position + Length);
+			catch (ParseError e)
+			{
+				throw e;
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse Indexes.");
+			}
 		}
 
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

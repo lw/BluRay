@@ -30,39 +30,67 @@ namespace BluRay
 
 		public PlayListMark PlayListMark { get; set; default = new BluRay.PlayListMark (); }
 
-		public MPLS.from_file (FileReader reader)
+		public ExtensionData ExtensionData { get; set; default = new BluRay.ExtensionData (); }
+
+		public MPLS.from_file_input_stream (FileInputStream input_stream) throws ParseError
 		{
-			read (reader);
+			try
+			{
+				this.from_bit_input_stream (new BitInputStream (input_stream));
+			}
+			catch (ParseError e)
+			{
+				throw e;
+			}
 		}
 
-		public void read (FileReader reader)
+		public MPLS.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			TypeIndicator = reader.read_string (4);
-			TypeIndicator2 = reader.read_string (4);
+			try
+			{
+				TypeIndicator = input_stream.read_string (4);
+				TypeIndicator2 = input_stream.read_string (4);
 
-			uint32 PlayListStartAddress = reader.read_bits_as_uint32 (32);
-			uint32 PlayListMarkStartAddress = reader.read_bits_as_uint32 (32);
-			uint32 ExtensionDataStartAddress = reader.read_bits_as_uint32 (32);
+				uint32 PlayListStartAddress = input_stream.read_bits_as_uint32 (32);
+				uint32 PlayListMarkStartAddress = input_stream.read_bits_as_uint32 (32);
+				uint32 ExtensionDataStartAddress = input_stream.read_bits_as_uint32 (32);
 
-			reader.skip_bits (160);
+				input_stream.skip_bits (160);
 
-			// AppInfoPlayList
-			AppInfoPlayList.read (reader);
+				// AppInfoPlayList
+				AppInfoPlayList = new BluRay.AppInfoPlayList.from_bit_input_stream (input_stream);
 
-			reader.seek (PlayListStartAddress);
+				input_stream.seek (PlayListStartAddress);
 
-			// PlayList
-			PlayList.read (reader);
+				// PlayList
+				PlayList = new BluRay.PlayList.from_bit_input_stream (input_stream);
 
-			reader.seek (PlayListMarkStartAddress);
+				input_stream.seek (PlayListMarkStartAddress);
 
-			// PlayListMarks
-			PlayListMark.read (reader);
+				// PlayListMark
+				PlayListMark = new BluRay.PlayListMark.from_bit_input_stream (input_stream);
+
+				if (ExtensionDataStartAddress != 0)
+				{
+					input_stream.seek (ExtensionDataStartAddress);
+
+					// ExtensionData
+					ExtensionData = new BluRay.ExtensionData.from_bit_input_stream (input_stream);
+				}
+			}
+			catch (ParseError e)
+			{
+				throw e;
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse MPLS.");
+			}
 		}
 
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

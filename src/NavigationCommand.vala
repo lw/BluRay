@@ -40,37 +40,39 @@ namespace BluRay
 
 		public uint32 Operand2 { get; set; }
 
-		public NavigationCommand.from_file (FileReader reader)
+		public NavigationCommand.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
+			try
+			{
+				OperandCount = input_stream.read_bits_as_uint8 (3);
+				CommandGroup = input_stream.read_bits_as_uint8 (2);
+				CommandSubGroup = input_stream.read_bits_as_uint8 (3);
+				ImmediateValueFlag1 = input_stream.read_bits_as_uint8 (1);
+				ImmediateValueFlag2 = input_stream.read_bits_as_uint8 (1);
+
+				input_stream.skip_bits (2);
+
+				BranchOption = input_stream.read_bits_as_uint8 (4);
+
+				input_stream.skip_bits (4);
+
+				CompareOption = input_stream.read_bits_as_uint8 (4);
+
+				input_stream.skip_bits (3);
+
+				SetOption = input_stream.read_bits_as_uint8 (5);
+				Operand1 = input_stream.read_bits_as_uint32 (32);
+				Operand2 = input_stream.read_bits_as_uint32 (32);
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse NavigationCommand.");
+			}
 		}
 
-		public void read (FileReader reader)
-		{
-			OperandCount = reader.read_bits_as_uint8 (3);
-			CommandGroup = reader.read_bits_as_uint8 (2);
-			CommandSubGroup = reader.read_bits_as_uint8 (3);
-			ImmediateValueFlag1 = reader.read_bits_as_uint8 (1);
-			ImmediateValueFlag2 = reader.read_bits_as_uint8 (1);
-
-			reader.skip_bits (2);
-
-			BranchOption = reader.read_bits_as_uint8 (4);
-
-			reader.skip_bits (4);
-
-			CompareOption = reader.read_bits_as_uint8 (4);
-
-			reader.skip_bits (3);
-
-			SetOption = reader.read_bits_as_uint8 (5);
-			Operand1 = reader.read_bits_as_uint32 (32);
-			Operand2 = reader.read_bits_as_uint32 (32);
-		}
-
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

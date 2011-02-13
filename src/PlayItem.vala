@@ -44,57 +44,63 @@ namespace BluRay
 
 		public STNTable STNTable { get; set; default = new BluRay.STNTable (); }
 
-		public PlayItem.from_file (FileReader reader)
+		public PlayItem.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
-		}
-
-		public void read (FileReader reader)
-		{
-			uint16 Length = reader.read_bits_as_uint16 (16);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			ClipInformationFileName = reader.read_string (5);
-			ClipCodecIdentifier = reader.read_string (4);
-
-			reader.skip_bits (11);
-
-			IsMultiAngle = reader.read_bits_as_uint8 (1);
-			ConnectionCondition = reader.read_bits_as_uint8 (4);
-			RefToSTCID = reader.read_bits_as_uint8 (8);
-			INTime = reader.read_bits_as_uint32 (32);
-			OUTTime = reader.read_bits_as_uint32 (32);
-
-			// UOMaskTable
-			UOMaskTable.read (reader);
-
-			PlayItemRandomAccessFlag = reader.read_bits_as_uint8 (1);
-
-			reader.skip_bits (7);
-
-			StillMode = reader.read_bits_as_uint8 (8);
-
-			if (StillMode == 0x01)
+			try
 			{
-				StillTime = reader.read_bits_as_uint8 (16);
+				uint16 Length = input_stream.read_bits_as_uint16 (16);
+
+				int64 Position = input_stream.tell (); // Needed to seek
+
+				ClipInformationFileName = input_stream.read_string (5);
+				ClipCodecIdentifier = input_stream.read_string (4);
+
+				input_stream.skip_bits (11);
+
+				IsMultiAngle = input_stream.read_bits_as_uint8 (1);
+				ConnectionCondition = input_stream.read_bits_as_uint8 (4);
+				RefToSTCID = input_stream.read_bits_as_uint8 (8);
+				INTime = input_stream.read_bits_as_uint32 (32);
+				OUTTime = input_stream.read_bits_as_uint32 (32);
+
+				// UOMaskTable
+				UOMaskTable = new BluRay.UOMaskTable.from_bit_input_stream (input_stream);
+
+				PlayItemRandomAccessFlag = input_stream.read_bits_as_uint8 (1);
+
+				input_stream.skip_bits (7);
+
+				StillMode = input_stream.read_bits_as_uint8 (8);
+
+				if (StillMode == 0x01)
+				{
+					StillTime = input_stream.read_bits_as_uint8 (16);
+				}
+				else
+				{
+					input_stream.skip_bits (16);
+				}
+
+				// TODO: MultiAngle
+
+				// STNTable
+				STNTable = new BluRay.STNTable.from_bit_input_stream (input_stream);
+
+				input_stream.seek (Position + Length);
 			}
-			else
+			catch (ParseError e)
 			{
-				reader.skip_bits (16);
+				throw e;
 			}
-
-			// TODO: MultiAngle
-
-			// STNTable
-			STNTable.read (reader);
-
-			reader.seek (Position + Length);
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse PlayItem.");
+			}
 		}
 
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

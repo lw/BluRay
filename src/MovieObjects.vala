@@ -29,53 +29,55 @@ namespace BluRay
 		// TODO: wait for compiler support for jagged multi-dimensional arrays
 		// public NavigationCommand[][] NavigationCommand { get; set; }
 
-		public MovieObjects.from_file (FileReader reader)
+		public MovieObjects.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
-		}
-
-		public void read (FileReader reader)
-		{
-			uint32 Length = reader.read_bits_as_uint32 (32);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			reader.skip_bits (32);
-
-			uint16 NumberOfMovieObjects = reader.read_bits_as_uint16 (16);
-
-			ResumeIntentionFlag = new uint8[NumberOfMovieObjects];
-			MenuCallMask = new uint8[NumberOfMovieObjects];
-			TitleSearchMask = new uint8[NumberOfMovieObjects];
-			// TODO: wait for compiler support for jagged multi-dimensional arrays
-			// NavigationCommand = new NavigationCommand[][NumberOfMovieObjects];
-
-			for (int i = 0; i < NumberOfMovieObjects; i += 1)
+			try
 			{
-				ResumeIntentionFlag[i] = reader.read_bits_as_uint8 (1);
-				MenuCallMask[i] = reader.read_bits_as_uint8 (1);
-				TitleSearchMask[i] = reader.read_bits_as_uint8 (1);
+				uint32 Length = input_stream.read_bits_as_uint32 (32);
 
-				uint16 NumberOfNavigationCommands = reader.read_bits_as_uint16 (16);
+				int64 Position = input_stream.tell (); // Needed to seek
 
+				input_stream.skip_bits (32);
+
+				uint16 NumberOfMovieObjects = input_stream.read_bits_as_uint16 (16);
+
+				ResumeIntentionFlag = new uint8[NumberOfMovieObjects];
+				MenuCallMask = new uint8[NumberOfMovieObjects];
+				TitleSearchMask = new uint8[NumberOfMovieObjects];
 				// TODO: wait for compiler support for jagged multi-dimensional arrays
-				// NavigationCommand[i] = new NavigationCommand[NumberOfNavigationCommands];
+				// NavigationCommand = new NavigationCommand[][NumberOfMovieObjects];
 
-				for (int j = 0; j < NumberOfNavigationCommands; j += 1)
+				for (int i = 0; i < NumberOfMovieObjects; i += 1)
 				{
-					// NavigationCommand
+					ResumeIntentionFlag[i] = input_stream.read_bits_as_uint8 (1);
+					MenuCallMask[i] = input_stream.read_bits_as_uint8 (1);
+					TitleSearchMask[i] = input_stream.read_bits_as_uint8 (1);
+
+					uint16 NumberOfNavigationCommands = input_stream.read_bits_as_uint16 (16);
+
 					// TODO: wait for compiler support for jagged multi-dimensional arrays
-					// NavigationCommand[i][j] = new BluRay.NavigationCommand.from_file (reader);
-					reader.skip_bits (96);
+					// NavigationCommand[i] = new NavigationCommand[NumberOfNavigationCommands];
+
+					for (int j = 0; j < NumberOfNavigationCommands; j += 1)
+					{
+						// TODO: wait for compiler support for jagged multi-dimensional arrays
+						// NavigationCommand
+						// NavigationCommand[i][j] = new BluRay.NavigationCommand.from_bit_input_stream (input_stream);
+						input_stream.skip_bits (96);
+					}
 				}
+
+				input_stream.seek (Position + Length);
 			}
-
-			reader.seek (Position + Length);
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse MovieObjects.");
+			}
 		}
 
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

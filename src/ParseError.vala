@@ -18,41 +18,9 @@
 
 namespace BluRay
 {
-	class Title : Object
-	{
-		public uint8 ObjectType { get; set; }
-
-		public uint16 AccessType { get; set; }
-
-		public uint32 PlaybackType { get; set; }
-
-		public uint8[] ObjectData { get; set; }
-
-		public Title.from_bit_input_stream (BitInputStream input_stream) throws ParseError
-		{
-			try
-			{
-				ObjectType = input_stream.read_bits_as_uint8 (2);
-				AccessType = input_stream.read_bits_as_uint8 (2);
-
-				input_stream.skip_bits (28);
-
-				PlaybackType = input_stream.read_bits_as_uint16 (2);
-
-				input_stream.skip_bits (14);
-
-				// TODO: use right fields
-				ObjectData = input_stream.read_bytes (6);
-			}
-			catch (IOError e)
-			{
-				throw new ParseError.INPUT_ERROR ("Couldn't parse Title.");
-			}
-		}
-
-//		public void write (BitOutputStream output_stream)
-//		{
-//		}
+	errordomain ParseError {
+		INPUT_ERROR,
+		VALIDATION_ERROR
 	}
 }
 

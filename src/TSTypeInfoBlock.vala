@@ -18,51 +18,21 @@
 
 namespace BluRay
 {
-	class PlayList : Object
+	class TSTypeInfoBlock : Object
 	{
-		public PlayItem[] PlayItem { get; set; }
-
-		public SubPath[] SubPath { get; set; }
-
-		public PlayList.from_bit_input_stream (BitInputStream input_stream) throws ParseError
+		public TSTypeInfoBlock.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
 			try
 			{
-				uint32 Length = input_stream.read_bits_as_uint32 (32);
+				uint16 Length = input_stream.read_bits_as_uint16 (16);
 
 				int64 Position = input_stream.tell (); // Needed to seek
 
-				input_stream.skip_bits (16);
-
-				uint16 NumberOfPlayItems = input_stream.read_bits_as_uint16 (16);
-				uint16 NumberOfSubPaths = input_stream.read_bits_as_uint16 (16);
-
-				PlayItem = new PlayItem[NumberOfPlayItems];
-
-				for (int i = 0; i < NumberOfPlayItems; i += 1)
-				{
-					// PlayItem
-					PlayItem[i] = new BluRay.PlayItem.from_bit_input_stream (input_stream);
-
-				}
-
-				SubPath = new SubPath[NumberOfSubPaths];
-
-				for (int i = 0; i < NumberOfSubPaths; i += 1)
-				{
-					// SubPath
-					SubPath[i] = new BluRay.SubPath.from_bit_input_stream (input_stream);
-				}
-
 				input_stream.seek (Position + Length);
-			}
-			catch (ParseError e)
-			{
-				throw e;
 			}
 			catch (IOError e)
 			{
-				throw new ParseError.INPUT_ERROR ("Couldn't parse PlayList.");
+				throw new ParseError.INPUT_ERROR ("Couldn't parse TSTypeInfoBlock.");
 			}
 		}
 

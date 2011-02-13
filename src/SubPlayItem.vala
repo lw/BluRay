@@ -38,38 +38,40 @@ namespace BluRay
 
 		public uint32 SyncStartPTS { get; set; }
 
-		public SubPlayItem.from_file (FileReader reader)
+		public SubPlayItem.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
+			try
+			{
+				uint16 Length = input_stream.read_bits_as_uint16 (16);
+
+				int64 Position = input_stream.tell (); // Needed to seek
+
+				ClipInformationFileName = input_stream.read_string (5);
+				ClipCodecIdentifier = input_stream.read_string (4);
+
+				input_stream.skip_bits (27);
+
+				ConnectionCondition = input_stream.read_bits_as_uint8 (4);
+				IsMultiClipEntries = input_stream.read_bits_as_uint8 (1);
+				RefToSTCID = input_stream.read_bits_as_uint8 (8);
+				INTime = input_stream.read_bits_as_uint32 (32);
+				OUTTime = input_stream.read_bits_as_uint32 (32);
+				SyncPlayItemID = input_stream.read_bits_as_uint16 (16);
+				SyncStartPTS = input_stream.read_bits_as_uint32 (32);
+
+				// TODO: MultiClipEntries
+
+				input_stream.seek (Position + Length);
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse SubPlayItem.");
+			}
 		}
 
-		public void read (FileReader reader)
-		{
-			uint16 Length = reader.read_bits_as_uint16 (16);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			ClipInformationFileName = reader.read_string (5);
-			ClipCodecIdentifier = reader.read_string (4);
-
-			reader.skip_bits (27);
-
-			ConnectionCondition = reader.read_bits_as_uint8 (4);
-			IsMultiClipEntries = reader.read_bits_as_uint8 (1);
-			RefToSTCID = reader.read_bits_as_uint8 (8);
-			INTime = reader.read_bits_as_uint32 (32);
-			OUTTime = reader.read_bits_as_uint32 (32);
-			SyncPlayItemID = reader.read_bits_as_uint16 (16);
-			SyncStartPTS = reader.read_bits_as_uint32 (32);
-
-			// TODO: MultiClipEntries
-
-			reader.seek (Position + Length);
-		}
-
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

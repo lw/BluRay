@@ -20,7 +20,7 @@ namespace BluRay
 {
 	class INDX : Object
 	{
-		public string TypeIndicator { get; set; default = "MPLS"; }
+		public string TypeIndicator { get; set; default = "INDX"; }
 
 		public string TypeIndicator2 { get; set; default = "0200"; }
 
@@ -28,33 +28,61 @@ namespace BluRay
 
 		public Indexes Indexes { get; set; default = new BluRay.Indexes (); }
 
-		public INDX.from_file (FileReader reader)
+		public ExtensionData ExtensionData { get; set; default = new BluRay.ExtensionData (); }
+
+		public INDX.from_file_input_stream (FileInputStream input_stream) throws ParseError
 		{
-			read (reader);
+			try
+			{
+				this.from_bit_input_stream (new BitInputStream (input_stream));
+			}
+			catch (ParseError e)
+			{
+				throw e;
+			}
 		}
 
-		public void read (FileReader reader)
+		public INDX.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			TypeIndicator = reader.read_string (4);
-			TypeIndicator2 = reader.read_string (4);
+			try
+			{
+				TypeIndicator = input_stream.read_string (4);
+				TypeIndicator2 = input_stream.read_string (4);
 
-			uint32 IndexesStartAddress = reader.read_bits_as_uint32 (32);
-			uint32 ExtensionDataStartAddress = reader.read_bits_as_uint32 (32);
+				uint32 IndexesStartAddress = input_stream.read_bits_as_uint32 (32);
+				uint32 ExtensionDataStartAddress = input_stream.read_bits_as_uint32 (32);
 
-			reader.skip_bits (192);
+				input_stream.skip_bits (192);
 
-			// AppInfoBDMV
-			AppInfoBDMV.read (reader);
+				// AppInfoBDMV
+				AppInfoBDMV = new BluRay.AppInfoBDMV.from_bit_input_stream (input_stream);
 
-			reader.seek (IndexesStartAddress);
+				input_stream.seek (IndexesStartAddress);
 
-			// Indexes
-			Indexes.read (reader);
+				// Indexes
+				Indexes = new BluRay.Indexes.from_bit_input_stream (input_stream);
+
+				if (ExtensionDataStartAddress != 0)
+				{
+					input_stream.seek (ExtensionDataStartAddress);
+
+					// ExtensionData
+					ExtensionData = new BluRay.ExtensionData.from_bit_input_stream (input_stream);
+				}
+			}
+			catch (ParseError e)
+			{
+				throw e;
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse INDX.");
+			}
 		}
 
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

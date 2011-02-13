@@ -26,41 +26,47 @@ namespace BluRay
 
 		public SubPlayItem[] SubPlayItem { get; set; }
 
-		public SubPath.from_file (FileReader reader)
+		public SubPath.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
-		}
-
-		public void read (FileReader reader)
-		{
-			uint32 Length = reader.read_bits_as_uint32 (32);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			reader.skip_bits (8);
-
-			SubPathType = reader.read_bits_as_uint8 (8);
-
-			reader.skip_bits (15);
-
-			IsRepeatSubPath = reader.read_bits_as_uint8 (1);
-
-			uint8 NumberOfSubPlayItems = reader.read_bits_as_uint8 (8);
-
-			SubPlayItem = new SubPlayItem[NumberOfSubPlayItems];
-
-			for (int i = 0; i < NumberOfSubPlayItems; i += 1)
+			try
 			{
-				// SubPlayItem
-				SubPlayItem[i] = new BluRay.SubPlayItem.from_file (reader);
+				uint32 Length = input_stream.read_bits_as_uint32 (32);
+
+				int64 Position = input_stream.tell (); // Needed to seek
+
+				input_stream.skip_bits (8);
+
+				SubPathType = input_stream.read_bits_as_uint8 (8);
+
+				input_stream.skip_bits (15);
+
+				IsRepeatSubPath = input_stream.read_bits_as_uint8 (1);
+
+				uint8 NumberOfSubPlayItems = input_stream.read_bits_as_uint8 (8);
+
+				SubPlayItem = new SubPlayItem[NumberOfSubPlayItems];
+
+				for (int i = 0; i < NumberOfSubPlayItems; i += 1)
+				{
+					// SubPlayItem
+					SubPlayItem[i] = new BluRay.SubPlayItem.from_bit_input_stream (input_stream);
+				}
+
+				input_stream.seek (Position + Length);
 			}
-
-			reader.seek (Position + Length);
+			catch (ParseError e)
+			{
+				throw e;
+			}
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse SubPath.");
+			}
 		}
 
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 

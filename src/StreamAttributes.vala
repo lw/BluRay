@@ -34,56 +34,58 @@ namespace BluRay
 
 		public string LanguageCode { get; set; default = "eng"; }
 
-		public StreamAttributes.from_file (FileReader reader)
+		public StreamAttributes.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
-			read (reader);
-		}
-
-		public void read (FileReader reader)
-		{
-			uint8 Length = reader.read_bits_as_uint8 (8);
-
-			int64 Position = reader.tell (); // Needed to seek
-
-			StreamCodingType = reader.read_bits_as_uint8 (8);
-
-			switch (StreamCodingType)
+			try
 			{
-				case 0x02:
-				case 0x1B:
-				case 0xEA:
-					VideoFormat = reader.read_bits_as_uint8 (4);
-					FrameRate = reader.read_bits_as_uint8 (4);
-					break;
-				case 0x80:
-				case 0x81:
-				case 0x82:
-				case 0x83:
-				case 0x84:
-				case 0x85:
-				case 0x86:
-				case 0xA1:
-				case 0xA2:
-					AudioFormat = reader.read_bits_as_uint8 (8);
-					SampleRate = reader.read_bits_as_uint8 (8);
-					LanguageCode = reader.read_string (3);
-					break;
-				case 0x90:
-				case 0x91:
-					LanguageCode = reader.read_string (3);
-					break;
-				case 0x92:
-					CharacterCode = reader.read_bits_as_uint8 (8);
-					LanguageCode = reader.read_string (3);
-					break;
+				uint8 Length = input_stream.read_bits_as_uint8 (8);
+
+				int64 Position = input_stream.tell (); // Needed to seek
+
+				StreamCodingType = input_stream.read_bits_as_uint8 (8);
+
+				switch (StreamCodingType)
+				{
+					case 0x02:
+					case 0x1B:
+					case 0xEA:
+						VideoFormat = input_stream.read_bits_as_uint8 (4);
+						FrameRate = input_stream.read_bits_as_uint8 (4);
+						break;
+					case 0x80:
+					case 0x81:
+					case 0x82:
+					case 0x83:
+					case 0x84:
+					case 0x85:
+					case 0x86:
+					case 0xA1:
+					case 0xA2:
+						AudioFormat = input_stream.read_bits_as_uint8 (8);
+						SampleRate = input_stream.read_bits_as_uint8 (8);
+						LanguageCode = input_stream.read_string (3);
+						break;
+					case 0x90:
+					case 0x91:
+						LanguageCode = input_stream.read_string (3);
+						break;
+					case 0x92:
+						CharacterCode = input_stream.read_bits_as_uint8 (8);
+						LanguageCode = input_stream.read_string (3);
+						break;
+				}
+
+				input_stream.seek (Position + Length);
 			}
-
-			reader.seek (Position + Length);
+			catch (IOError e)
+			{
+				throw new ParseError.INPUT_ERROR ("Couldn't parse StreamAttributes.");
+			}
 		}
 
-		public void write (FileOutputStream stream)
-		{
-		}
+//		public void write (BitOutputStream output_stream)
+//		{
+//		}
 	}
 }
 
