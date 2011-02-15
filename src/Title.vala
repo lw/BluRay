@@ -26,7 +26,7 @@ namespace BluRay
 
 		public uint32 PlaybackType { get; set; }
 
-		public uint8[] ObjectData { get; set; }
+		public string ObjectData { get; set; }
 
 		public Title.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
@@ -42,7 +42,7 @@ namespace BluRay
 				input_stream.skip_bits (14);
 
 				// TODO: use right fields
-				ObjectData = input_stream.read_bytes (6);
+				ObjectData = input_stream.read_string (6);
 			}
 			catch (IOError e)
 			{

@@ -20,17 +20,17 @@ namespace BluRay
 {
 	class MPLS : Object
 	{
-		public string TypeIndicator { get; set; default = "MPLS"; }
+		public string TypeIndicator { get; set; }
 
-		public string TypeIndicator2 { get; set; default = "0200"; }
+		public string TypeIndicator2 { get; set; }
 
-		public AppInfoPlayList AppInfoPlayList { get; set; default = new BluRay.AppInfoPlayList (); }
+		public AppInfoPlayList AppInfoPlayList { get; set; }
 
-		public PlayList PlayList { get; set; default = new BluRay.PlayList (); }
+		public PlayList PlayList { get; set; }
 
-		public PlayListMark PlayListMark { get; set; default = new BluRay.PlayListMark (); }
+		public PlayListMark PlayListMark { get; set; }
 
-		public ExtensionData ExtensionData { get; set; default = new BluRay.ExtensionData (); }
+		public ExtensionData ExtensionData { get; set; }
 
 		public MPLS.from_file_input_stream (FileInputStream input_stream) throws ParseError
 		{

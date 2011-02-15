@@ -20,9 +20,9 @@ namespace BluRay
 {
 	class SubPlayItem : Object
 	{
-		public string ClipInformationFileName { get; set; default = "00000"; }
+		public string ClipInformationFileName { get; set; }
 
-		public string ClipCodecIdentifier { get; set; default = "M2TS"; }
+		public string ClipCodecIdentifier { get; set; }
 
 		public uint8 ConnectionCondition { get; set; }
 

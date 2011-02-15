@@ -32,7 +32,7 @@ namespace BluRay
 
 		public uint8 CharacterCode { get; set; }
 
-		public string LanguageCode { get; set; default = "eng"; }
+		public string LanguageCode { get; set; }
 
 		public StreamAttributes.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{

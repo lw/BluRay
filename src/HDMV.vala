@@ -20,21 +20,21 @@ namespace BluRay
 {
 	class HDMV : Object
 	{
-		public string TypeIndicator { get; set; default = "HDMV"; }
+		public string TypeIndicator { get; set; }
 
-		public string TypeIndicator2 { get; set; default = "0200"; }
+		public string TypeIndicator2 { get; set; }
 
-		public ClipInfo ClipInfo { get; set; default = new BluRay.ClipInfo (); }
+		public ClipInfo ClipInfo { get; set; }
 
-		public SequenceInfo SequenceInfo { get; set; default = new BluRay.SequenceInfo (); }
+		public SequenceInfo SequenceInfo { get; set; }
 
-//		public ProgramInfo ProgramInfo { get; set; default = new BluRay.ProgramInfo (); }
+//		public ProgramInfo ProgramInfo { get; set; }
 
-//		public CPI CPI { get; set; default = new BluRay.CPI (); }
+//		public CPI CPI { get; set; }
 
-//		public ClipMark ClipMark { get; set; default = new BluRay.ClipMark (); }
+//		public ClipMark ClipMark { get; set; }
 
-		public ExtensionData ExtensionData { get; set; default = new BluRay.ExtensionData (); }
+		public ExtensionData ExtensionData { get; set; }
 
 		public HDMV.from_file_input_stream (FileInputStream input_stream) throws ParseError
 		{

@@ -28,7 +28,7 @@ namespace BluRay
 
 		public uint8 FrameRate { get; set; }
 
-		public string UserData { get; set; default = ""; }
+		public string UserData { get; set; }
 
 		public AppInfoBDMV.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{

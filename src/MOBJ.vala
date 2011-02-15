@@ -20,13 +20,13 @@ namespace BluRay
 {
 	class MOBJ : Object
 	{
-		public string TypeIndicator { get; set; default = "MOBJ"; }
+		public string TypeIndicator { get; set; }
 
-		public string TypeIndicator2 { get; set; default = "0200"; }
+		public string TypeIndicator2 { get; set; }
 
-		public MovieObjects MovieObjects { get; set; default = new BluRay.MovieObjects (); }
+		public MovieObjects MovieObjects { get; set; }
 
-		public ExtensionData ExtensionData { get; set; default = new BluRay.ExtensionData (); }
+		public ExtensionData ExtensionData { get; set; }
 
 		public MOBJ.from_file_input_stream (FileInputStream input_stream) throws ParseError
 		{

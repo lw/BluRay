@@ -24,7 +24,7 @@ namespace BluRay
 
 		public uint16 PlaybackCount { get; set; }
 
-		public UOMaskTable UOMaskTable { get; set; default = new BluRay.UOMaskTable (); }
+		public UOMaskTable UOMaskTable { get; set; }
 
 		public uint8 RandomAccessFlag { get; set; }
 

@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Gee;
+
 namespace BluRay
 {
 	class SubPath : Object
@@ -24,7 +26,7 @@ namespace BluRay
 
 		public uint8 IsRepeatSubPath { get; set; }
 
-		public SubPlayItem[] SubPlayItem { get; set; }
+		public ArrayList<SubPlayItem> SubPlayItem { get; set; }
 
 		public SubPath.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
@@ -44,12 +46,12 @@ namespace BluRay
 
 				uint8 NumberOfSubPlayItems = input_stream.read_bits_as_uint8 (8);
 
-				SubPlayItem = new SubPlayItem[NumberOfSubPlayItems];
+				SubPlayItem = new ArrayList<SubPlayItem> ();
 
 				for (int i = 0; i < NumberOfSubPlayItems; i += 1)
 				{
 					// SubPlayItem
-					SubPlayItem[i] = new BluRay.SubPlayItem.from_bit_input_stream (input_stream);
+					SubPlayItem.add (new BluRay.SubPlayItem.from_bit_input_stream (input_stream));
 				}
 
 				input_stream.seek (Position + Length);

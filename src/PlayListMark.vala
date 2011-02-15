@@ -16,19 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Gee;
+
 namespace BluRay
 {
 	class PlayListMark : Object
 	{
-		public uint8[] MarkType { get; set; }
+		public ArrayList<uint8> MarkType { get; set; }
 
-		public uint16[] RefToPlayItemID { get; set; }
+		public ArrayList<uint16> RefToPlayItemID { get; set; }
 
-		public uint32[] MarkTimeStamp { get; set; }
+		public ArrayList<uint32> MarkTimeStamp { get; set; }
 
-		public uint16[] EntryESPID { get; set; }
+		public ArrayList<uint16> EntryESPID { get; set; }
 
-		public uint32[] Duration { get; set; }
+		public ArrayList<uint32> Duration { get; set; }
 
 		public PlayListMark.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
@@ -40,21 +42,21 @@ namespace BluRay
 
 				uint16 NumberOfPlayListMarks = input_stream.read_bits_as_uint16 (16);
 
-				MarkType = new uint8[NumberOfPlayListMarks];
-				RefToPlayItemID = new uint16[NumberOfPlayListMarks];
-				MarkTimeStamp = new uint32[NumberOfPlayListMarks];
-				EntryESPID = new uint16[NumberOfPlayListMarks];
-				Duration = new uint32[NumberOfPlayListMarks];
+				MarkType = new ArrayList<uint8> ();
+				RefToPlayItemID = new ArrayList<uint16> ();
+				MarkTimeStamp = new ArrayList<uint32> ();
+				EntryESPID = new ArrayList<uint16> ();
+				Duration = new ArrayList<uint32> ();
 
 				for (int i = 0; i < NumberOfPlayListMarks; i += 1)
 				{
 					input_stream.skip_bits (8);
 
-					MarkType[i] = input_stream.read_bits_as_uint8 (8);
-					RefToPlayItemID[i] = input_stream.read_bits_as_uint16 (16);
-					MarkTimeStamp[i] = input_stream.read_bits_as_uint32 (32);
-					EntryESPID[i] = input_stream.read_bits_as_uint16 (16);
-					Duration[i] = input_stream.read_bits_as_uint32 (32);
+					MarkType.add (input_stream.read_bits_as_uint8 (8));
+					RefToPlayItemID.add (input_stream.read_bits_as_uint16 (16));
+					MarkTimeStamp.add (input_stream.read_bits_as_uint32 (32));
+					EntryESPID.add (input_stream.read_bits_as_uint16 (16));
+					Duration.add (input_stream.read_bits_as_uint32 (32));
 				}
 
 				input_stream.seek (Position + Length);

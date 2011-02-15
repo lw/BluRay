@@ -20,15 +20,15 @@ namespace BluRay
 {
 	class INDX : Object
 	{
-		public string TypeIndicator { get; set; default = "INDX"; }
+		public string TypeIndicator { get; set; }
 
-		public string TypeIndicator2 { get; set; default = "0200"; }
+		public string TypeIndicator2 { get; set; }
 
-		public AppInfoBDMV AppInfoBDMV { get; set; default = new BluRay.AppInfoBDMV (); }
+		public AppInfoBDMV AppInfoBDMV { get; set; }
 
-		public Indexes Indexes { get; set; default = new BluRay.Indexes (); }
+		public Indexes Indexes { get; set; }
 
-		public ExtensionData ExtensionData { get; set; default = new BluRay.ExtensionData (); }
+		public ExtensionData ExtensionData { get; set; }
 
 		public INDX.from_file_input_stream (FileInputStream input_stream) throws ParseError
 		{

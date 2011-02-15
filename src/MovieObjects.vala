@@ -16,18 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Gee;
+
 namespace BluRay
 {
 	class MovieObjects : Object
 	{
-		public uint8[] ResumeIntentionFlag { get; set; }
+		public ArrayList<uint8> ResumeIntentionFlag { get; set; }
 
-		public uint8[] MenuCallMask { get; set; }
+		public ArrayList<uint8> MenuCallMask { get; set; }
 
-		public uint8[] TitleSearchMask { get; set; }
+		public ArrayList<uint8> TitleSearchMask { get; set; }
 
-		// TODO: wait for compiler support for jagged multi-dimensional arrays
-		// public NavigationCommand[][] NavigationCommand { get; set; }
+		public ArrayList<ArrayList<NavigationCommand>> NavigationCommand { get; set; }
 
 		public MovieObjects.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
@@ -41,28 +42,26 @@ namespace BluRay
 
 				uint16 NumberOfMovieObjects = input_stream.read_bits_as_uint16 (16);
 
-				ResumeIntentionFlag = new uint8[NumberOfMovieObjects];
-				MenuCallMask = new uint8[NumberOfMovieObjects];
-				TitleSearchMask = new uint8[NumberOfMovieObjects];
-				// TODO: wait for compiler support for jagged multi-dimensional arrays
-				// NavigationCommand = new NavigationCommand[][NumberOfMovieObjects];
+				ResumeIntentionFlag = new ArrayList<uint8> ();
+				MenuCallMask = new ArrayList<uint8> ();
+				TitleSearchMask = new ArrayList<uint8> ();
+				NavigationCommand = new ArrayList<ArrayList<NavigationCommand>> ();
 
 				for (int i = 0; i < NumberOfMovieObjects; i += 1)
 				{
-					ResumeIntentionFlag[i] = input_stream.read_bits_as_uint8 (1);
-					MenuCallMask[i] = input_stream.read_bits_as_uint8 (1);
-					TitleSearchMask[i] = input_stream.read_bits_as_uint8 (1);
+					ResumeIntentionFlag.add (input_stream.read_bits_as_uint8 (1));
+					MenuCallMask.add (input_stream.read_bits_as_uint8 (1));
+					TitleSearchMask.add (input_stream.read_bits_as_uint8 (1));
 
 					uint16 NumberOfNavigationCommands = input_stream.read_bits_as_uint16 (16);
 
-					// TODO: wait for compiler support for jagged multi-dimensional arrays
-					// NavigationCommand[i] = new NavigationCommand[NumberOfNavigationCommands];
+					NavigationCommand.add (new ArrayList<NavigationCommand> ());
 
 					for (int j = 0; j < NumberOfNavigationCommands; j += 1)
 					{
-						// TODO: wait for compiler support for jagged multi-dimensional arrays
 						// NavigationCommand
-						// NavigationCommand[i][j] = new BluRay.NavigationCommand.from_bit_input_stream (input_stream);
+						NavigationCommand[i].add (new BluRay.NavigationCommand.from_bit_input_stream (input_stream));
+
 						input_stream.skip_bits (96);
 					}
 				}

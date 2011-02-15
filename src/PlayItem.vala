@@ -20,9 +20,9 @@ namespace BluRay
 {
 	class PlayItem : Object
 	{
-		public string ClipInformationFileName { get; set; default = "00000"; }
+		public string ClipInformationFileName { get; set; }
 
-		public string ClipCodecIdentifier { get; set; default = "M2TS"; }
+		public string ClipCodecIdentifier { get; set; }
 
 		public uint8 IsMultiAngle { get; set; }
 
@@ -34,7 +34,7 @@ namespace BluRay
 
 		public uint32 OUTTime { get; set; }
 
-		public UOMaskTable UOMaskTable { get; set; default = new BluRay.UOMaskTable (); }
+		public UOMaskTable UOMaskTable { get; set; }
 
 		public uint8 PlayItemRandomAccessFlag { get; set; }
 
@@ -42,7 +42,7 @@ namespace BluRay
 
 		public uint16 StillTime { get; set; }
 
-		public STNTable STNTable { get; set; default = new BluRay.STNTable (); }
+		public STNTable STNTable { get; set; }
 
 		public PlayItem.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{

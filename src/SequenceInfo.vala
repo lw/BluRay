@@ -16,22 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Gee;
+
 namespace BluRay
 {
 	class SequenceInfo : Object
 	{
-		public uint32[] SPNATCStart { get; set; }
+		public ArrayList<uint32> SPNATCStart { get; set; }
 
-		public uint8[] OffsetSTCID { get; set; }
+		public ArrayList<uint8> OffsetSTCID { get; set; }
 
-		// TODO: wait for compiler support for jagged multi-dimensional arrays
-		// public uint16[][] PCRPID { get; set; }
+		public ArrayList<ArrayList<uint16>> PCRPID { get; set; }
 
-		// public uint32[][] SPNSTCStart { get; set; }
+		public ArrayList<ArrayList<uint32>> SPNSTCStart { get; set; }
 
-		// public uint32[][] PresentationStartTime { get; set; }
+		public ArrayList<ArrayList<uint32>> PresentationStartTime { get; set; }
 
-		// public uint32[][] PresentationEndTime { get; set; }
+		public ArrayList<ArrayList<uint32>> PresentationEndTime { get; set; }
 
 		public SequenceInfo.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
@@ -45,36 +46,33 @@ namespace BluRay
 
 				uint8 NumberOfATCSequences = input_stream.read_bits_as_uint8 (8);
 
-				SPNATCStart = new uint32[NumberOfATCSequences];
-				OffsetSTCID = new uint8[NumberOfATCSequences];
-
-				// TODO: wait for compiler support for jagged multi-dimensional arrays
-				// PCRPID = new uint16[][NumberOfATCSequences];
-				// SPNSTCStart = new uint32[][NumberOfATCSequences];
-				// PresentationStartTime = new uint32[][NumberOfATCSequences];
-				// PresentationEndTime = new uint32[][NumberOfATCSequences];
+				SPNATCStart = new ArrayList<uint32> ();
+				OffsetSTCID = new ArrayList<uint8> ();
+				PCRPID = new ArrayList<ArrayList<uint16>> ();
+				SPNSTCStart = new ArrayList<ArrayList<uint32>> ();
+				PresentationStartTime = new ArrayList<ArrayList<uint32>> ();
+				PresentationEndTime = new ArrayList<ArrayList<uint32>> ();
 
 				for (int i = 0; i < NumberOfATCSequences; i += 1)
 				{
-					SPNATCStart[i] = input_stream.read_bits_as_uint32 (32);
+					SPNATCStart.add (input_stream.read_bits_as_uint32 (32));
 
 					uint8 NumberOfSTCSequences = input_stream.read_bits_as_uint8 (8);
 
-					OffsetSTCID[i] = input_stream.read_bits_as_uint8 (8);
+					OffsetSTCID.add (input_stream.read_bits_as_uint8 (8));
 
-					// TODO: wait for compiler support for jagged multi-dimensional arrays
-					// PCRPID[i] = new uint16[NumberOfSTCSequences];
-					// SPNSTCStart[i] = new uint32[NumberOfSTCSequences];
-					// PresentationStartTime[i] = new uint32[NumberOfSTCSequences];
-					// PresentationEndTime[i] = new uint32[NumberOfSTCSequences];
+					PCRPID.add (new ArrayList<uint16> ());
+					SPNSTCStart.add (new ArrayList<uint32> ());
+					PresentationStartTime.add (new ArrayList<uint32> ());
+					PresentationEndTime.add (new ArrayList<uint32> ());
 
 					for (int j = 0; j < NumberOfSTCSequences; j += 1)
 					{
-						// TODO: wait for compiler support for jagged multi-dimensional arrays
-						// PCRPID[i][j] = input_stream.read_bits_as_uint16 (16);
-						// SPNSTCStart[i][j] = input_stream.read_bits_as_uint32 (32);
-						// PresentationStartTime[i][j] = input_stream.read_bits_as_uint32 (32);
-						// PresentationEndTime[i][j] = input_stream.read_bits_as_uint32 (32);
+						PCRPID[i].add (input_stream.read_bits_as_uint16 (16));
+						SPNSTCStart[i].add (input_stream.read_bits_as_uint32 (32));
+						PresentationStartTime[i].add (input_stream.read_bits_as_uint32 (32));
+						PresentationEndTime[i].add (input_stream.read_bits_as_uint32 (32));
+
 						input_stream.skip_bits (112);
 					}
 				}

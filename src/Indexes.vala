@@ -16,15 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Gee;
+
 namespace BluRay
 {
 	class Indexes : Object
 	{
-		public Title FirstPlaybackTitle { get; set; default = new BluRay.Title (); }
+		public Title FirstPlaybackTitle { get; set; }
 
-		public Title TopMenuTitle { get; set; default = new BluRay.Title (); }
+		public Title TopMenuTitle { get; set; }
 
-		public Title[] Title { get; set; }
+		public ArrayList<Title> Title { get; set; }
 
 		public Indexes.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
@@ -42,12 +44,12 @@ namespace BluRay
 
 				uint16 NumberOfTitles = input_stream.read_bits_as_uint16 (16);
 
-				Title = new Title[NumberOfTitles];
+				Title = new ArrayList<Title> ();
 
 				for (int i = 0; i < NumberOfTitles; i += 1)
 				{
 					// Title
-					Title[i] = new BluRay.Title.from_bit_input_stream (input_stream);
+					Title.add (new BluRay.Title.from_bit_input_stream (input_stream));
 				}
 
 				input_stream.seek (Position + Length);

@@ -33,7 +33,7 @@ namespace BluRay
 			position = 0;
 		}
 
-		public uint8 read_bits_as_uint8 (int size) throws IOError
+		public uint8 read_bits_as_uint8 (uint32 size) throws IOError
 		{
 			try
 			{
@@ -79,7 +79,7 @@ namespace BluRay
 			}
 		}
 
-		public uint16 read_bits_as_uint16 (int size) throws IOError
+		public uint16 read_bits_as_uint16 (uint32 size) throws IOError
 		{
 			try
 			{
@@ -125,7 +125,7 @@ namespace BluRay
 			}
 		}
 
-		public uint32 read_bits_as_uint32 (int size) throws IOError
+		public uint32 read_bits_as_uint32 (uint32 size) throws IOError
 		{
 			try
 			{
@@ -171,7 +171,7 @@ namespace BluRay
 			}
 		}
 
-		public uint64 read_bits_as_uint64 (int size) throws IOError
+		public uint64 read_bits_as_uint64 (uint32 size) throws IOError
 		{
 			try
 			{
@@ -217,7 +217,7 @@ namespace BluRay
 			}
 		}
 
-		public uint8[] read_bytes (int size) throws IOError
+		public uint8[] read_bytes (uint32 size) throws IOError
 		{
 			try
 			{
@@ -243,7 +243,7 @@ namespace BluRay
 			}
 		}
 
-		public string read_string (int size) throws IOError
+		public string read_string (uint32 size) throws IOError
 		{
 			try
 			{
@@ -255,7 +255,7 @@ namespace BluRay
 			}
 		}
 
-		public void skip_bits (int size) throws IOError
+		public void skip_bits (uint32 size) throws IOError
 		{
 			try
 			{
@@ -288,7 +288,7 @@ namespace BluRay
 			}
 		}
 
-		public void skip_bytes (int size) throws IOError
+		public void skip_bytes (uint32 size) throws IOError
 		{
 			try
 			{

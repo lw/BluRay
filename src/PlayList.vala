@@ -16,13 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Gee;
+
 namespace BluRay
 {
 	class PlayList : Object
 	{
-		public PlayItem[] PlayItem { get; set; }
+		public ArrayList<PlayItem> PlayItem { get; set; }
 
-		public SubPath[] SubPath { get; set; }
+		public ArrayList<SubPath> SubPath { get; set; }
 
 		public PlayList.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
@@ -37,21 +39,21 @@ namespace BluRay
 				uint16 NumberOfPlayItems = input_stream.read_bits_as_uint16 (16);
 				uint16 NumberOfSubPaths = input_stream.read_bits_as_uint16 (16);
 
-				PlayItem = new PlayItem[NumberOfPlayItems];
+				PlayItem = new ArrayList<PlayItem> ();
 
 				for (int i = 0; i < NumberOfPlayItems; i += 1)
 				{
 					// PlayItem
-					PlayItem[i] = new BluRay.PlayItem.from_bit_input_stream (input_stream);
+					PlayItem.add (new BluRay.PlayItem.from_bit_input_stream (input_stream));
 
 				}
 
-				SubPath = new SubPath[NumberOfSubPaths];
+				SubPath = new ArrayList<SubPath> ();
 
 				for (int i = 0; i < NumberOfSubPaths; i += 1)
 				{
 					// SubPath
-					SubPath[i] = new BluRay.SubPath.from_bit_input_stream (input_stream);
+					SubPath.add (new BluRay.SubPath.from_bit_input_stream (input_stream));
 				}
 
 				input_stream.seek (Position + Length);

@@ -16,37 +16,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Gee;
+
 namespace BluRay
 {
 	class STNTable : Object
 	{
-		public StreamEntry[] PrimaryVideoStreamEntry { get; set; }
+		public ArrayList<StreamEntry> PrimaryVideoStreamEntry { get; set; }
 
-		public StreamAttributes[] PrimaryVideoStreamAttributes { get; set; }
+		public ArrayList<StreamAttributes> PrimaryVideoStreamAttributes { get; set; }
 
-		public StreamEntry[] PrimaryAudioStreamEntry { get; set; }
+		public ArrayList<StreamEntry> PrimaryAudioStreamEntry { get; set; }
 
-		public StreamAttributes[] PrimaryAudioStreamAttributes { get; set; }
+		public ArrayList<StreamAttributes> PrimaryAudioStreamAttributes { get; set; }
 
-		public StreamEntry[] PrimaryPGStreamEntry { get; set; }
+		public ArrayList<StreamEntry> PrimaryPGStreamEntry { get; set; }
 
-		public StreamAttributes[] PrimaryPGStreamAttributes { get; set; }
+		public ArrayList<StreamAttributes> PrimaryPGStreamAttributes { get; set; }
 
-		public StreamEntry[] PrimaryIGStreamEntry { get; set; }
+		public ArrayList<StreamEntry> PrimaryIGStreamEntry { get; set; }
 
-		public StreamAttributes[] PrimaryIGStreamAttributes { get; set; }
+		public ArrayList<StreamAttributes> PrimaryIGStreamAttributes { get; set; }
 
-		public StreamEntry[] SecondaryVideoStreamEntry { get; set; }
+		public ArrayList<StreamEntry> SecondaryVideoStreamEntry { get; set; }
 
-		public StreamAttributes[] SecondaryVideoStreamAttributes { get; set; }
+		public ArrayList<StreamAttributes> SecondaryVideoStreamAttributes { get; set; }
 
-		public StreamEntry[] SecondaryAudioStreamEntry { get; set; }
+		public ArrayList<StreamEntry> SecondaryAudioStreamEntry { get; set; }
 
-		public StreamAttributes[] SecondaryAudioStreamAttributes { get; set; }
+		public ArrayList<StreamAttributes> SecondaryAudioStreamAttributes { get; set; }
 
-		public StreamEntry[] SecondaryPGStreamEntry { get; set; }
+		public ArrayList<StreamEntry> SecondaryPGStreamEntry { get; set; }
 
-		public StreamAttributes[] SecondaryPGStreamAttributes { get; set; }
+		public ArrayList<StreamAttributes> SecondaryPGStreamAttributes { get; set; }
 
 		public STNTable.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
@@ -68,88 +70,88 @@ namespace BluRay
 
 				input_stream.skip_bits (40);
 
-				PrimaryVideoStreamEntry = new StreamEntry[NumberOfPrimaryVideoStreams];
-				PrimaryVideoStreamAttributes = new StreamAttributes[NumberOfPrimaryVideoStreams];
+				PrimaryVideoStreamEntry = new ArrayList<StreamEntry> ();
+				PrimaryVideoStreamAttributes = new ArrayList<StreamAttributes> ();
 
 				for (int i = 0; i < NumberOfPrimaryVideoStreams; i += 1)
 				{
 					// StreamEntry
-					PrimaryVideoStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+					PrimaryVideoStreamEntry.add (new StreamEntry.from_bit_input_stream (input_stream));
 
 					// StreamAttributes
-					PrimaryVideoStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+					PrimaryVideoStreamAttributes.add (new StreamAttributes.from_bit_input_stream (input_stream));
 				}
 
-				PrimaryAudioStreamEntry = new StreamEntry[NumberOfPrimaryAudioStreams];
-				PrimaryAudioStreamAttributes = new StreamAttributes[NumberOfPrimaryAudioStreams];
+				PrimaryAudioStreamEntry = new ArrayList<StreamEntry> ();
+				PrimaryAudioStreamAttributes = new ArrayList<StreamAttributes> ();
 
 				for (int i = 0; i < NumberOfPrimaryAudioStreams; i += 1)
 				{
 					// StreamEntry
-					PrimaryAudioStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+					PrimaryAudioStreamEntry.add (new StreamEntry.from_bit_input_stream (input_stream));
 
 					// StreamAttributes
-					PrimaryAudioStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+					PrimaryAudioStreamAttributes.add (new StreamAttributes.from_bit_input_stream (input_stream));
 				}
 
-				PrimaryPGStreamEntry = new StreamEntry[NumberOfPrimaryPGStreams];
-				PrimaryPGStreamAttributes = new StreamAttributes[NumberOfPrimaryPGStreams];
+				PrimaryPGStreamEntry = new ArrayList<StreamEntry> ();
+				PrimaryPGStreamAttributes = new ArrayList<StreamAttributes> ();
 
 				for (int i = 0; i < NumberOfPrimaryPGStreams; i += 1)
 				{
 					// StreamEntry
-					PrimaryPGStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+					PrimaryPGStreamEntry.add (new StreamEntry.from_bit_input_stream (input_stream));
 
 					// StreamAttributes
-					PrimaryPGStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+					PrimaryPGStreamAttributes.add (new StreamAttributes.from_bit_input_stream (input_stream));
 				}
 
-				SecondaryPGStreamEntry = new StreamEntry[NumberOfSecondaryPGStreams];
-				SecondaryPGStreamAttributes = new StreamAttributes[NumberOfSecondaryPGStreams];
+				SecondaryPGStreamEntry = new ArrayList<StreamEntry> ();
+				SecondaryPGStreamAttributes = new ArrayList<StreamAttributes> ();
 
 				for (int i = 0; i < NumberOfSecondaryPGStreams; i += 1)
 				{
 					// StreamEntry
-					SecondaryPGStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+					SecondaryPGStreamEntry.add (new StreamEntry.from_bit_input_stream (input_stream));
 
 					// StreamAttributes
-					SecondaryPGStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+					SecondaryPGStreamAttributes.add (new StreamAttributes.from_bit_input_stream (input_stream));
 				}
 
-				PrimaryIGStreamEntry = new StreamEntry[NumberOfPrimaryIGStreams];
-				PrimaryIGStreamAttributes = new StreamAttributes[NumberOfPrimaryIGStreams];
+				PrimaryIGStreamEntry = new ArrayList<StreamEntry> ();
+				PrimaryIGStreamAttributes = new ArrayList<StreamAttributes> ();
 
 				for (int i = 0; i < NumberOfPrimaryIGStreams; i += 1)
 				{
 					// StreamEntry
-					PrimaryIGStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+					PrimaryIGStreamEntry.add (new StreamEntry.from_bit_input_stream (input_stream));
 
 					// StreamAttributes
-					PrimaryIGStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+					PrimaryIGStreamAttributes.add (new StreamAttributes.from_bit_input_stream (input_stream));
 				}
 
-				SecondaryAudioStreamEntry = new StreamEntry[NumberOfSecondaryAudioStreams];
-				SecondaryAudioStreamAttributes = new StreamAttributes[NumberOfSecondaryAudioStreams];
+				SecondaryAudioStreamEntry = new ArrayList<StreamEntry> ();
+				SecondaryAudioStreamAttributes = new ArrayList<StreamAttributes> ();
 
 				for (int i = 0; i < NumberOfSecondaryAudioStreams; i += 1)
 				{
 					// StreamEntry
-					SecondaryAudioStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+					SecondaryAudioStreamEntry.add (new StreamEntry.from_bit_input_stream (input_stream));
 
 					// StreamAttributes
-					SecondaryAudioStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+					SecondaryAudioStreamAttributes.add (new StreamAttributes.from_bit_input_stream (input_stream));
 				}
 
-				SecondaryVideoStreamEntry = new StreamEntry[NumberOfSecondaryVideoStreams];
-				SecondaryVideoStreamAttributes = new StreamAttributes[NumberOfSecondaryVideoStreams];
+				SecondaryVideoStreamEntry = new ArrayList<StreamEntry> ();
+				SecondaryVideoStreamAttributes = new ArrayList<StreamAttributes> ();
 
 				for (int i = 0; i < NumberOfSecondaryVideoStreams; i += 1)
 				{
 					// StreamEntry
-					SecondaryVideoStreamEntry[i] = new StreamEntry.from_bit_input_stream (input_stream);
+					SecondaryVideoStreamEntry.add (new StreamEntry.from_bit_input_stream (input_stream));
 
 					// StreamAttributes
-					SecondaryVideoStreamAttributes[i] = new StreamAttributes.from_bit_input_stream (input_stream);
+					SecondaryVideoStreamAttributes.add (new StreamAttributes.from_bit_input_stream (input_stream));
 				}
 
 				input_stream.seek (Position + Length);

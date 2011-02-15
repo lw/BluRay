@@ -30,7 +30,7 @@ namespace BluRay
 
 		public uint32 NumberOfSourcePackets { get; set; }
 
-//		public TSTypeInfoBlock TSTypeInfoBlock { get; set; default = new TSTypeInfoBlock (); }
+		public TSTypeInfoBlock TSTypeInfoBlock { get; set; }
 
 		public ClipInfo.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
