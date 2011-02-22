@@ -18,13 +18,17 @@
 
 namespace BluRay
 {
-	class StreamAttributes : Object
+	class StreamCodingInfo : Object
 	{
 		public uint8 StreamCodingType { get; set; }
 
 		public uint8 VideoFormat { get; set; }
 
 		public uint8 FrameRate { get; set; }
+
+		public uint8 VideoAspect { get; set; }
+
+		public uint8 OCFlag { get; set; }
 
 		public uint8 AudioFormat { get; set; }
 
@@ -34,7 +38,7 @@ namespace BluRay
 
 		public string LanguageCode { get; set; }
 
-		public StreamAttributes.from_bit_input_stream (BitInputStream input_stream) throws ParseError
+		public StreamCodingInfo.from_bit_input_stream (BitInputStream input_stream) throws ParseError
 		{
 			try
 			{
@@ -51,6 +55,10 @@ namespace BluRay
 					case 0xEA:
 						VideoFormat = input_stream.read_bits_as_uint8 (4);
 						FrameRate = input_stream.read_bits_as_uint8 (4);
+						VideoAspect = input_stream.read_bits_as_uint8 (4);
+						input_stream.skip_bits (2);
+						OCFlag = input_stream.read_bits_as_uint8 (1);
+						input_stream.skip_bits (1);
 						break;
 					case 0x80:
 					case 0x81:
@@ -79,7 +87,7 @@ namespace BluRay
 			}
 			catch (IOError e)
 			{
-				throw new ParseError.INPUT_ERROR ("Couldn't parse StreamAttributes.");
+				throw new ParseError.INPUT_ERROR ("Couldn't parse StreamCodingInfo.");
 			}
 		}
 

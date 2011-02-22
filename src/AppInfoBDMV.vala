@@ -48,8 +48,6 @@ namespace BluRay
 				VideoFormat = input_stream.read_bits_as_uint8 (4);
 				FrameRate = input_stream.read_bits_as_uint8 (4);
 
-				input_stream.skip_bits (16);
-
 				UserData = input_stream.read_string (32);
 
 				input_stream.seek (Position + Length);

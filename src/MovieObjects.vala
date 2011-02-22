@@ -53,6 +53,8 @@ namespace BluRay
 					MenuCallMask.add (input_stream.read_bits_as_uint8 (1));
 					TitleSearchMask.add (input_stream.read_bits_as_uint8 (1));
 
+					input_stream.skip_bits (13);
+
 					uint16 NumberOfNavigationCommands = input_stream.read_bits_as_uint16 (16);
 
 					NavigationCommand.add (new ArrayList<NavigationCommand> ());
@@ -61,8 +63,6 @@ namespace BluRay
 					{
 						// NavigationCommand
 						NavigationCommand[i].add (new BluRay.NavigationCommand.from_bit_input_stream (input_stream));
-
-						input_stream.skip_bits (96);
 					}
 				}
 

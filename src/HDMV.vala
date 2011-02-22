@@ -28,9 +28,9 @@ namespace BluRay
 
 		public SequenceInfo SequenceInfo { get; set; }
 
-//		public ProgramInfo ProgramInfo { get; set; }
+		public ProgramInfo ProgramInfo { get; set; }
 
-//		public CPI CPI { get; set; }
+		public CPI CPI { get; set; }
 
 //		public ClipMark ClipMark { get; set; }
 
@@ -74,12 +74,12 @@ namespace BluRay
 				input_stream.seek (ProgramInfoStartAddress);
 
 				// ProgramInfo
-//				ProgramInfo = new BluRay.ProgramInfo.from_bit_input_stream (input_stream);
+				ProgramInfo = new BluRay.ProgramInfo.from_bit_input_stream (input_stream);
 
 				input_stream.seek (CPIStartAddress);
 
 				// CPI
-//				CPI = new BluRay.CPI.from_bit_input_stream (input_stream);
+				CPI = new BluRay.CPI.from_bit_input_stream (input_stream);
 
 				input_stream.seek (ClipMarkStartAddress);
 

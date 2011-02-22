@@ -72,8 +72,6 @@ namespace BluRay
 						SPNSTCStart[i].add (input_stream.read_bits_as_uint32 (32));
 						PresentationStartTime[i].add (input_stream.read_bits_as_uint32 (32));
 						PresentationEndTime[i].add (input_stream.read_bits_as_uint32 (32));
-
-						input_stream.skip_bits (112);
 					}
 				}
 

@@ -50,7 +50,7 @@ namespace BluRay
 
 				while (size >= 8)
 				{
-					result *= (uint8) 256;
+					result <<= 8;
 					stream.read (byte);
 					result += byte[0];
 					size -= 8;
@@ -96,7 +96,7 @@ namespace BluRay
 
 				while (size >= 8)
 				{
-					result *= (uint8) 256;
+					result <<= 8;
 					stream.read (byte);
 					result += byte[0];
 					size -= 8;
@@ -142,7 +142,7 @@ namespace BluRay
 
 				while (size >= 8)
 				{
-					result *= (uint8) 256;
+					result <<= 8;
 					stream.read (byte);
 					result += byte[0];
 					size -= 8;
@@ -188,7 +188,7 @@ namespace BluRay
 
 				while (size >= 8)
 				{
-					result *= (uint8) 256;
+					result <<= 8;
 					stream.read (byte);
 					result += byte[0];
 					size -= 8;
